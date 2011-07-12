@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Edmund - Wikidot Explorer</title>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js"></script>
+<script type="text/javascript" src="https://jquery-wikidot-api.wdfiles.com/local--code/code:jquery-cookie"></script>
+<script type="text/javascript" src="https://jquery-wikidot-api.wdfiles.com/local--code/code:jquery-wikidot-api"></script>
+<script type="text/javascript" src="https://bmcenterprises.wdfiles.com/local--files/images/jquery.jeditable.min.js"></script>
+<script type="text/javascript" src="https://css3.wdfiles.com/local--code/admin:tipsy-js"></script>
+ 
+<link rel="stylesheet" href="https://css3.wdfiles.com/local--code/admin:explorer-css/1" type="text/css" />
+ 
+<script type="text/javascript">
+    function FriendlyDate(str_date,str_format) {
+        <!-- Friendly Date Converter -->
+        <!-- © James Kanjo 2011 -->
+ 
+        var obj_date = {raw:str_date.replace(/(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):\d\d([\+-])(\d\d):(\d\d)/,'year:$1;month:$2;day:$3;hour:$4;minute:$5;z:$6;zhour:$7;zminute:$8;')};
+ 
+        obj_date = {raw:obj_date["raw"], year:/year:([^;]+);/.exec(obj_date["raw"])[1], month:/month:([^;]+);/.exec(obj_date["raw"])[1], day:/day:([^;]+);/.exec(obj_date["raw"])[1], hour:/hour:([^;]+);/.exec(obj_date["raw"])[1], minute:/minute:([^;]+);/.exec(obj_date["raw"])[1], z:/z:([^;]+);/.exec(obj_date["raw"])[1], zhour:/zhour:([^;]+);/.exec(obj_date["raw"])[1], zminute:/zminute:([^;]+);/.exec(obj_date["raw"])[1]};
+ 
+        var int_tmp = eval(obj_date["zminute"]);
+        obj_date["zhour"] = eval(obj_date["zhour"]) + (int_tmp>=60)*Math.floor(int_tmp/60);
+        obj_date["zminute"] = (int_tmp<60)*int_tmp + (int_tmp>=60)*(int_tmp%60);
+ 
+        int_tmp = eval(obj_date["minute"]);
+        obj_date["minute"] = int_tmp + eval('0'+obj_date["z"]+obj_date["zminute"]);
+        int_tmp = eval(obj_date["minute"]);
+        obj_date["hour"] = eval(obj_date["hour"])+(int_tmp>=60)+(int_tmp<0)*-1;
+        obj_date["minute"] = (int_tmp>=0&&int_tmp<60)*int_tmp+(int_tmp<0)*(60-Math.abs(int_tmp))+(int_tmp>=60)*(int_tmp-60);
+ 
+        int_tmp = eval(obj_date["hour"]);
+        obj_date["hour"] = int_tmp + eval('0'+obj_date["z"]+obj_date["zhour"]);
+        int_tmp = eval(obj_date["hour"]);
+        obj_date["day"] = eval(obj_date["day"])+(int_tmp>=24)+(int_tmp<0)*-1;
+        obj_date["hour"] = (int_tmp>=0&&int_tmp<24)*int_tmp+(int_tmp<0)*(24-Math.abs(int_tmp))+(int_tmp>=24)*(int_tmp-24);
+ 
+        var tmp_date = new Date(eval(obj_date["year"]), eval(obj_date["month"])-1, eval(obj_date["day"]));
+        obj_date["year"] = tmp_date.getFullYear();
+        obj_date["month"] = tmp_date.getMonth()+1;
+        obj_date["day"] = tmp_date.getDate();
+ 
+        var fmt_yy = obj_date["year"].toString().replace(/\d\d(\d\d)/,'$1');
+        var fmt_yyyy = obj_date["year"];
+        var fmt_m = obj_date["month"];
+        var fmt_mm = ('0'+obj_date["month"]).replace(/^0(..)/,'$1');
+        var fmt_mmmm = ["January","February","March","April","May","June","July","August","September","October","November","December"][eval(obj_date["month"])-1];
+        var fmt_mmm = /^(...)/.exec(fmt_mmmm)[1];
+        var fmt_d = obj_date["day"];
+        var fmt_dd = ('0'+obj_date["day"]).replace(/^00/,'0');
+        var fmt_h = obj_date["hour"];
+        var fmt_hh = obj_date["hour"];
+        var fmt_M = obj_date["minute"];
+        var fmt_MM = ('0'+obj_date["minute"]).replace(/^0(..)/,'$1');
+        var fmt_P = "AM";
+        var fmt_p = "am";
+        if (eval(obj_date["hour"])>12) {
+            fmt_P = "PM";
+            fmt_p = "pm";
+            fmt_h = eval(obj_date["hour"])-12;
+        }
+ 
+        str_format = str_format.replace(/\[yyyy]/gi,fmt_yyyy);
+        str_format = str_format.replace(/\[yy]/gi,fmt_yy);
+        str_format = str_format.replace(/\[mmmm]/gi,fmt_mmmm);
+        str_format = str_format.replace(/\[mmm]/gi,fmt_mmm);
+        str_format = str_format.replace(/\[mm]/g,fmt_mm);
+        str_format = str_format.replace(/\[m]/g,fmt_m);
+        str_format = str_format.replace(/\[dd]/gi,fmt_dd);
+        str_format = str_format.replace(/\[d]/gi,fmt_d);
+        str_format = str_format.replace(/\[hh]/gi,fmt_hh);
+        str_format = str_format.replace(/\[h]/gi,fmt_h);
+        str_format = str_format.replace(/\[MM]/g,fmt_MM);
+        str_format = str_format.replace(/\[M]/g,fmt_M);
+        str_format = str_format.replace(/\[P]/g,fmt_P);
+        str_format = str_format.replace(/\[p]/g,fmt_p);
+ 
+        return str_format;
+    }
+</script>
+ 
+<script type="text/javascript">
+ 
+//Sidebar lists 
+var goToPageList = function() {
+       $('.sidebar-list-container.left').removeClass('current');
+       $('.sidebar-list-container.right').addClass('current');
+   };
+var goToCategoryList = function() {
+       $('.sidebar-list-container.right').removeClass('current');
+       $('.sidebar-list-container.left').addClass('current');
+   };
+ 
+//Main sliding navs
+var showEditor = function() {
+        $('#main section').removeClass('current');
+        $('#main-editor').addClass('current');
+};
+var showIntro = function() {
+        $('#main section').removeClass('current');
+        $('#main-intro').addClass('current');
+};
+ 
+//Show & hide draws
+var showChildrenDraw = function() {
+        $('#children').addClass('show');
+};
+var hideChildrenDraw = function(draw) {
+        $('#children').removeClass('show');
+};
+var showTagsDraw = function() {
+        $('#tags').addClass('show');
+};
+var hideTagsDraw = function(draw) {
+        $('#tags').removeClass('show');
+};
+var showAboutDraw = function() {
+        $('#about').addClass('show');
+};
+var hideAboutDraw = function(draw) {
+        $('#about').removeClass('show');
+};
+var showIntroDraw = function() {
+        $('#intro').addClass('show');
+};
+var hideIntroDraw = function(draw) {
+        $('#intro').removeClass('show');
+};
+var showPageOptionsDraw = function() {
+        $('#page-options').addClass('show');
+};
+var hidePageOptionsDraw = function(draw) {
+        $('#page-options').removeClass('show');
+};
+var hideAllDraws = function(draw) {
+        $('.draw').removeClass('show');
+};
+ 
+//Close settings window (called on click of submit button)  
+function close_settings() {
+           var settingsSite = $('#settings-site').val();
+           window.location.hash = '#';
+}
+ 
+$(document).ready(function() {
+ 
+//Initialise API settings, & define users API key
+var update_wd = function() {
+        wd = $.wikidot('bmc-explorer', $('#settings-api-key').val());
+       };
+ 
+    $('#settings-api-key').val(localStorage.getItem('wikidot_api_key')).change(function() {
+        localStorage.setItem('wikidot_api_key', $(this).val());
+        update_wd();
+     });
+    update_wd();
+ 
+//Save wikidot site to cookie
+var update_site = function() {
+    wdSite = $('#settings-site').val();
+    $('#info-site').html(wdSite + '.wikidot.com');
+}; 
+ 
+$('#settings-site').val(localStorage.getItem('wikidot_site')).change(function() {
+        localStorage.setItem('wikidot_site', $(this).val());
+        update_site();
+});
+update_site();
+ 
+//Check notifications checkbox
+var update_notifications = function() {
+    window.saveNotifications = localStorage.getItem('wikidot_notifications');
+    if (saveNotifications === 'true') {
+     $('#notify-notifications').addClass('show').tipsy({gravity: 'ne', fade: true}); //Show email icon
+     $('#settings-notifications').each(function(){ this.checked = true; }); //Check the checkbox
+    }
+    else { 
+    $('#notify-notifications').removeClass('show');
+    }
+};
+ 
+$('#settings-notifications').click(function() {
+    if ($('#settings-notifications').is(':checked')) {
+            console.log('yes, send notifications. Saved cookie.');
+            localStorage.setItem('wikidot_notifications', 'true'); 
+        }
+    else {
+            console.log('No, dont send notifications. Saved cookie.');
+            localStorage.setItem('wikidot_notifications', 'false'); 
+        }
+    update_notifications();
+});
+update_notifications();
+ 
+//Loading Message
+var loading = $('#loading');
+ 
+var  loadingMessage = function(message) {
+     loading.html(message).fadeIn(250);
+};
+var clearLoadingMessage = function() {
+    loading.fadeOut(250);
+};
+ 
+//Generate page structure
+var getPageMeta = function(page) {
+ 
+        loadingMessage('Loading page...');
+ 
+        wd.pages.get_one({'site': wdSite, 'page': page}, function(data) {
+ 
+         if(data) {
+ 
+         clearLoadingMessage();
+ 
+         $('#info-page').html('<a href="http://' + wdSite + '.wikidot.com/' + data.fullname + '" target="_blank">' + data.title + '</a>');
+ 
+         created_at = FriendlyDate(data.created_at, '[mmmm] [d], [yyyy] at [h]:[MM] [p]');
+         updated_at = FriendlyDate(data.updated_at, '[mmmm] [d], [yyyy] at [h]:[MM] [p]');
+ 
+         //Load into the table
+         $('#meta-name').html(data.fullname);
+         $('#meta-title').html(data.title);
+         $('#meta-parent').html(data.parent_fullname);
+         $('#meta-created_by').html(data.created_by);
+         $('#meta-created_at').html(created_at);
+         $('#meta-updated_by').html(data.updated_by);
+         $('#meta-updated_at').html(updated_at);
+         $('#meta-revisions').html(data.revisions);
+         $('#meta-rating').html(data.rating);
+         $('#meta-children').html(data.children);
+         $('#meta-comments').html(data.comments);
+         $('#meta-content').val(data.content);
+ 
+         //Load tags into tags field
+         var tagNumber = data.tags.length;
+         var metaTagsArray = '';
+ 
+         if (tagNumber > 0) {
+             for(i=0; i<tagNumber; i++) { 
+             metaTagsArray += data.tags[i] + ' ';
+             }
+         }
+         else {
+         }
+         $('#meta-tags').html(metaTagsArray);
+ 
+         //Pre-load the hidden input fields
+         $('#save-page-name').val(data.fullname);
+         $('#save-page-original-name').val(data.fullname);
+         $('#save-page-title').val(data.title);
+         $('#save-page-parent').val(data.parent_fullname);
+         $('#save-page-tags').val(data.tags);
+ 
+         //Load pagename into "children" link
+         $('#show-children-link').attr('title',data.fullname);
+         //Load pagename into "tags" link
+         $('#show-tags-link').attr('title',data.fullname);
+         }
+         else {
+         loadingMessage('Error fetching data.');
+          }
+        });
+    };  
+ 
+//Page list
+var getPageList = function(category) {
+ 
+        loadingMessage('Loading pages...');
+        //Clear any existing pages in the list
+        $('#page-list').html('');
+        $('#info-page-count').html('');
+        wd.pages.select({'site' : wdSite, 'categories' : [category]}, function(data) {
+ 
+            var totalPages = data.length;
+ 
+            if(data) {
+ 
+            clearLoadingMessage();
+ 
+            var pageList = $('#page-list');
+            var pageListItems = '';
+ 
+            //Generate new pages
+            for(i=0; i<totalPages; i++) { 
+                pageListItems += '<li><a href="#" class="page-link" title="' + data[i] + '">' + data[i] + '</a></li>';
+            }
+            pageList.html(pageListItems);
+            $('#info-page-count').html('(' + totalPages + ')');
+            }
+            else {
+ 
+            }
+        });
+};
+ 
+//If a page link is clicked, load that page in the editor.
+$('a.page-link').live('click', function() {
+    getPageMeta($(this).attr('title'));
+});
+//If a page link is clicked from a draw, load that page & close the draw 
+$('section.draw a.page-link').live('click', function() {
+    getPageMeta($(this).attr('title'));
+    $('.draw').removeClass('show');
+});
+ 
+//Generate category list
+var getCatList = function(category) {
+ 
+    loadingMessage('Loading site...');
+ 
+    wd.categories.select({'site' : wdSite}, function(data) {
+ 
+        var totalCategories = data.length;
+        var categoryList = $('#category-list');
+        var categoryListItems = '';
+ 
+        if(data) {
+         clearLoadingMessage();
+            for(i=0; i<totalCategories; i++) { 
+                   categoryListItems += '<li><a href="#" id="catlink-' + data[i] + '" class="category-link" title="' + data[i] + '">' + data[i] + '</a></li>';
+            }
+            categoryList.html(categoryListItems);
+            $('#info-category-count').html('(' + totalCategories + ')');
+        }
+        else {
+            loadingMessage('Error generating list of categories.');
+        }
+    });
+};
+ 
+//If category link in sidebar is clicked, generate page list
+$('a.category-link').live('click', function() {
+    getPageList($(this).attr('title'));
+    $('#info-category').html($(this).attr('title'));
+    goToPageList();
+});
+ 
+//Get list of children
+var getChildList = function(parent) {
+        loadingMessage('Loading children...');
+                //Clear any existing pages in the list
+                $('#children-list').html('');
+ 
+                wd.pages.select({'site' : wdSite, 'parent' : parent}, function(data) {
+ 
+                    var totalPages = data.length;
+ 
+                    if(totalPages > 0) {
+ 
+                    clearLoadingMessage();
+ 
+                    //Clear existing messages in the draw
+                    $('#children p').html('');
+ 
+                    var childrenList = $('#children-list');
+                    var childrenListItems = '';
+ 
+                    //Generate new pages
+                    for(i=0; i<totalPages; i++) { 
+                        childrenListItems += '<li><a href="#" class="page-link" title="' + data[i] + '">' + data[i] + '</a></li>';
+                    }
+                     childrenList.html(childrenListItems);
+                    }
+                    else {
+                    clearLoadingMessage();
+                    $('#children p').html('This page has no children.');
+                    console.log('No children');
+                    }
+                });
+};
+ 
+//If 'Children' is clicked, open draw & load children pages & close tags draw if it's open
+$('#show-children-link').live('click', function() {
+    getChildList($(this).attr('title'));
+    hideAllDraws();
+    showChildrenDraw(); 
+});
+ 
+//Get list of tags for the entire site
+var getSiteTagsList = function() {
+        loadingMessage('Loading tags...');
+                //Clear any existing pages in the list
+                $('#tags-list').html('');
+ 
+                wd.tags.select({'site' : wdSite}, function(data) {
+ 
+                    var totalTags = data.length;
+ 
+                    if(data) {
+ 
+                    clearLoadingMessage();
+ 
+                    $('#tags p').html('Currently showing tags for the entire site.');
+ 
+                    var tagsList = $('#tags-list');
+                    var tagsListItems = '';
+ 
+                    //Generate new pages
+                    for(i=0; i<totalTags; i++) { 
+                        tagsListItems += '<li><a href="#" class="tag-link" title="' + data[i] + '">' + data[i] + '</a></li>';
+                    }
+                     tagsList.html(tagsListItems);
+                    }
+                    else {
+                    $('#tags p').html('This site has no tags.');
+                    }
+                });
+};
+ 
+//Get list of tags attached to a particular page
+var getPageTagsList = function(page) {
+        loadingMessage('Loading tags...');
+                //Clear any existing pages in the list
+                $('#tags-list').html('');
+                //Clear any messages in the draw
+                $('#tags p').html('');
+ 
+                wd.tags.select({'site' : wdSite, 'pages' : [page]}, function(data) {
+ 
+                    var totalTags = data.length;
+ 
+                    if(totalTags > 0) {
+ 
+                    clearLoadingMessage();
+ 
+                    $('#tags p').html('<p>Currently showing tags for <strong>' + page + '</strong>. <a href="#" id="show-site-tags-link">Show tags for entire site</a><p>');
+ 
+                    var tagsList = $('#tags-list');
+                    var tagsListItems = '';
+ 
+                    //Generate new pages
+                    for(i=0; i<totalTags; i++) { 
+                        tagsListItems += '<li><a href="#" class="tag-link" title="' + data[i] + '">' + data[i] + '</a></li>';
+                    }
+                     tagsList.html(tagsListItems);
+                    }
+                    else {
+                    clearLoadingMessage();
+                    $('#tags p').html('This page has no tags.');
+                    console.log('No tags');
+                    }
+                });
+};
+ 
+//If 'Tags' is clicked, open draw & load tags & close children draw
+$('#show-tags-link').live('click', function() {
+    getPageTagsList($(this).attr('title'));
+    hideAllDraws();
+    showTagsDraw();
+});
+$('#show-site-tags-link').live('click', function() {
+    getSiteTagsList();
+});
+ 
+//Save a page
+var savePage = function() {
+ 
+        loadingMessage('Saving page...');
+ 
+        var saveTitle = $('#save-page-title').val();
+        var saveName = $('#save-page-name').val();
+        var pageName = $('#save-page-original-name').val();
+        var saveContent = $('#meta-content').val();
+ 
+        //Create string of tags
+        var saveTagsString = $('#save-page-tags').val();
+        var saveTags = saveTagsString.split(' ');
+ 
+       //Check if parent page is present
+       if($('#save-page-parent').val() === ''){
+                         var saveParent = '-';
+                     }
+                         else {
+                     var saveParent = $('#save-page-parent').val();
+                     }
+ 
+       wd.pages.save_one({'site': wdSite, 'page': pageName, 'title': saveTitle, 'tags' : saveTags, 'parent_fullname' : saveParent, 'content' : saveContent, 'rename_as' : saveName, 'revision_comment' : 'Edited with Edmund - Wikidot Explorer.', 'notify_watchers' : saveNotifications}, function(data) {
+        if(data) {
+        loading.html('Page was saved successfully.').delay(3000).fadeOut(200);
+ 
+        //Load new page into editor
+ 
+        $('#info-page').html('<a href="http://' + wdSite + '.wikidot.com/' + data.fullname + '" target="_blank">' + data.title + '</a>');
+ 
+        created_at = FriendlyDate(data.created_at, '[mmmm] [d], [yyyy] at [h]:[MM] [p]');
+        updated_at = FriendlyDate(data.updated_at, '[mmmm] [d], [yyyy] at [h]:[MM] [p]');
+ 
+        //Load into the table
+        $('#meta-name').html(data.fullname);
+        $('#meta-title').html(data.title);
+        $('#meta-parent').html(data.parent_fullname);
+        $('#meta-created_by').html(data.created_by);
+        $('#meta-created_at').html(created_at);
+        $('#meta-updated_by').html(data.updated_by);
+        $('#meta-updated_at').html(updated_at);
+        $('#meta-revisions').html(data.revisions);
+        $('#meta-rating').html(data.rating);
+        $('#meta-children').html(data.children);
+        $('#meta-comments').html(data.comments);
+        $('#meta-content').val(data.content);
+ 
+        //Load tags into tags field
+                var tagNumber = data.tags.length;
+                var metaTagsArray = '';
+ 
+                if (tagNumber > 0) {
+                    for(i=0; i<tagNumber; i++) { 
+                    metaTagsArray += data.tags[i] + ' ';
+                    }
+                }
+                else {
+                }
+                $('#meta-tags').html(metaTagsArray);
+ 
+        //Pre-load the hidden input fields
+        $('#save-page-name').val(data.fullname);
+        $('#save-page-original-name').val(data.fullname);
+        $('#save-page-title').val(data.title);
+        $('#save-page-parent').val(data.parent_fullname);
+        $('#save-page-tags').val(data.tags);
+ 
+        //Load pagename into "children" link
+        $('#show-children-link').attr('title',data.fullname);
+        //Load pagename into "tags" link
+        $('#show-tags-link').attr('title',data.fullname);
+        }
+        else {
+        loading.html('Error saving page.').delay(3000).fadeOut(200);
+         }
+       });
+   };
+//Save page on submit button click
+$('#save-page-submit').live('click', function() {
+    console.log('submit button clicked');
+    savePage();
+});
+ 
+//Delete a page
+var deletePage = function() {
+ 
+        loadingMessage('Renaming page...');
+ 
+        var saveTitle = $('#save-page-title').val();
+        var saveName = $('#save-page-name').val();
+        var pageName = $('#save-page-original-name').val();
+        var saveContent = $('#meta-content').val();
+ 
+         //Create string of tags
+         var saveTagsString = $('#save-page-tags').val();
+         var saveTags = saveTagsString.split(' ');
+ 
+       //Check if parent page is present
+       if($('#save-page-parent').val() === ''){
+                         var saveParent = '-';
+                     }
+                         else {
+                     var saveParent = $('#save-page-parent').val();
+                     }
+ 
+       wd.pages.save_one({'site': wdSite, 'page': pageName, 'title': saveTitle, 'tags' : saveTags, 'parent_fullname' : saveParent, 'content' : saveContent, 'rename_as' : 'deleted:' + saveName, 'revision_comment' : 'Edited with Edmund - Wikidot Explorer.', 'notify_watchers' : saveNotifications}, function(data) {
+        if(data) {
+        loading.html('Page was successfully renamed.').delay(3000).fadeOut(200);
+ 
+        //Load new page into editor
+ 
+        $('#info-page').html('<a href="http://' + wdSite + '.wikidot.com/' + data.fullname + '" target="_blank">' + data.title + '</a>');
+ 
+        created_at = FriendlyDate(data.created_at, '[mmmm] [d], [yyyy] at [h]:[MM] [p]');
+        updated_at = FriendlyDate(data.updated_at, '[mmmm] [d], [yyyy] at [h]:[MM] [p]');
+ 
+        //Load into the table
+        $('#meta-name').html(data.fullname);
+        $('#meta-title').html(data.title);
+        $('#meta-parent').html(data.parent_fullname);
+        $('#meta-created_by').html(data.created_by);
+        $('#meta-created_at').html(created_at);
+        $('#meta-updated_by').html(data.updated_by);
+        $('#meta-updated_at').html(updated_at);
+        $('#meta-revisions').html(data.revisions);
+        $('#meta-rating').html(data.rating);
+        $('#meta-children').html(data.children);
+        $('#meta-comments').html(data.comments);
+        $('#meta-content').val(data.content);
+ 
+        //Load tags into tags field
+                var tagNumber = data.tags.length;
+                var metaTagsArray = '';
+ 
+                if (tagNumber > 0) {
+                    for(i=0; i<tagNumber; i++) { 
+                    metaTagsArray += data.tags[i] + ' ';
+                    }
+                }
+                else {
+                }
+                $('#meta-tags').html(metaTagsArray);
+ 
+        //Pre-load the hidden input fields
+        $('#save-page-name').val(data.fullname);
+        $('#save-page-original-name').val(data.fullname);
+        $('#save-page-title').val(data.title);
+        $('#save-page-parent').val(data.parent_fullname);
+        $('#save-page-tags').val(data.tags);
+ 
+        //Load pagename into "children" link
+        $('#show-children-link').attr('title',data.fullname);
+        //Load pagename into "tags" link
+        $('#show-tags-link').attr('title',data.fullname);
+        //Close  the draw
+        hideAllDraws();
+        }
+        else {
+        loading.html('Error renaming page.').delay(3000).fadeOut(200);
+         }
+       });
+   };
+//Delete page on 'delete' button click
+$('#options-delete').live('click', function() {
+    console.log('delete button clicked');
+    deletePage();
+});
+ 
+//jEditable - title
+$('#meta-title').editable(function(value, settings) {
+        $('#save-page-title').val(value);
+        return(value);
+        }, {
+        tooltip : 'Click to edit',
+        submit : 'Save',
+        indicator : 'Saving...',
+        placeholder : '',
+        cssclass : 'jedit'
+});
+//jEditable - parent
+$('.edit-parent').editable(function(value, settings) {
+        $('#save-page-parent').val(value);
+        return(value);
+        }, {
+        tooltip : 'Click to edit',
+        submit : 'Save',
+        indicator : 'Saving...',
+        placeholder : '',
+        cssclass : 'jedit'
+});    
+//jEditable - tags
+$('#meta-tags').editable(function(value, settings) {
+        $('#save-page-tags').val(value);
+        return(value);
+        }, {
+        tooltip : 'Click to edit',
+        submit : 'Save',
+        indicator : 'Saving...',
+        placeholder : '',
+        cssclass : 'jedit'
+});
+//jEditable - name
+$('#meta-name').editable(function(value, settings) {
+        $('#save-page-name').val(value);
+        return(value);
+        }, {
+        tooltip : 'Click to edit',
+        submit : 'Save',
+        indicator : 'Saving...',
+        placeholder : '',
+        cssclass : 'jedit'
+});
+ 
+//When launch button is clicked, get category list
+$('#launch-button').live('click', function() {
+       getCatList(); 
+       hideIntroDraw();
+});
+ 
+//When settings form is submitted, hide draws, close settings window & load category list
+$('#settings-form').submit(function() {
+       getCatList(); 
+       hideIntroDraw();
+       close_settings();
+       return false;
+});    
+ 
+//When page options link is clicked, open page options draw
+$('#page-options-link').live('click', function() {
+       showPageOptionsDraw(); 
+});
+
+ 
+});
+ 
+</script>
+ 
+</head>
+<body id="top">
+<header>
+<div class="inner">
+<span id="loading"></span>
+<h1>Edmund - Wikidot Explorer</h1>
+</div>
+</header>
+ 
+<div id="content">
+ 
+<div id="sidebar">
+<div class="menubar side"><a href="#settings">Settings</a></div>
+ 
+<div id="side-menubar">
+<div class="sidebar-list-container left current"><h4>Categories</h4><span id="info-category-count" class="count"></span></div>
+<div class="sidebar-list-container right"><a href="#" class="menubar-back" onclick="goToCategoryList();">Back</a><h4 id="info-category"></h4><span id="info-page-count" class="count"></span></div>
+</div>
+<div id="sidebar-lists">
+<ul id="category-list" class="sidebar-list-container left current">
+</ul>
+<ul id="page-list" class="sidebar-list-container right">
+</ul>    
+</div>
+ 
+</div>
+ 
+ <div id="main">
+ 
+ <section id="main-editor">
+ 
+ <div class="menubar main">
+ <span id="info-site"></span> <span id="info-page"></span>
+ <a href="#" id="save-page-submit">Save Changes</a>
+ <a href="#" id="page-options-link">Page Options</a>
+ </div>
+ <div class="notification-center">
+ <div id="notify-notifications" title="Email notifications will be sent"></div>
+ </div>
+ <div class="table-wrapper">
+ <table class="page-meta full top">
+ <tr>
+ <td>Title</td><td id="meta-title" class="editable"></td>
+ </tr>
+ </table>
+ 
+ <table class="page-meta left">
+ <tr>
+ <td>Fullname</td><td id="meta-name" class="editable" title="Click to rename the page"></td>
+ </tr>
+ <tr>
+ <td>Created by</td><td id="meta-created_by"></td>
+ </tr>
+ <tr>
+ <td>Creation date</td><td id="meta-created_at"></td>
+ </tr>
+ <tr>
+ <td>Updated by</td><td id="meta-updated_by"></td>
+ </tr>
+ <tr>
+ <td>Update date</td><td id="meta-updated_at"></td>
+ </tr>
+  </table>
+ 
+  <table class="page-meta right">
+  <tr>
+  <td>Parent</td><td id="meta-parent" class="edit-parent editable"></td>
+  </tr>
+  <tr>
+  <td>Revisions</td><td id="meta-revisions"></td>
+  </tr>
+  <tr>
+  <td>Rating</td><td id="meta-rating"></td>
+  </tr>
+  <tr>
+  <td><a href="#" id="show-children-link">Children</a></td><td id="meta-children"></td>
+  </tr>
+  <tr>
+  <td>Comments</td><td id="meta-comments"></td>
+  </tr>
+  </table>
+ 
+  <table class="page-meta full bottom">
+  <tr>
+  <td><a href="#" id="show-tags-link">Tags</a></td><td id="meta-tags" class="editable"></td>
+  </tr>
+  </table>
+ 
+ <textarea id="meta-content"></textarea>
+ </div>
+ 
+<form id="save-page-form" name="save page" onsubmit="return false;">
+<input type="hidden" name="save-page-title" id="save-page-title" value="" />
+<input type="hidden" name="save-page-parent" id="save-page-parent" value="" />
+<input type="hidden" name="save-page-tags" id="save-page-tags" value="" />
+<input type="hidden" name="save-page-name" id="save-page-name" value="" />
+<input type="hidden" name="save-page-original-name" id="save-page-original-name" value="" />
+</form>
+ 
+</section>
+ 
+<section id="intro" class="draw wide show">
+<div class="menubar draw">
+<span>Welcome to Edmund</span><a href="#" onclick="hideIntroDraw();">Close</a>
+</div>
+ 
+<div class="inner scrollable">
+ 
+<p><strong>First timers:</strong></p>
+ 
+<p>If this is the first time you've visited Edmund, then you'll need to enter your Wikidot API key and a site to explore in the <a href="#settings">settings panel</a>.</p>
+ 
+<p><strong>Regulars:</strong></p>
+ 
+<p>If you've  visited Edmund before, then your settings should be saved. Click the button below to start exploring.</p>
+ 
+<p><a href="#" id="launch-button">Launch App</a></p>
+ 
+<p><strong>Finding your way around</strong></p>
+ 
+<p>The sidebar on the left shows all the categories in your site. Click on a category to show all the pages in that category. Click on a page to load it into the main window.</p>
+ 
+<p>The main window shows all the meta information attached to the page as well as the content of the page. Fields that change colour when you hover over them can be edited - click to edit their contents, then press enter or the save button to save your changes locally. Once you've edited all that you want to, click the <em>Save Changes</em> button in the top right to export the page to your Wikidot site.</p>
+ 
+<p>Status messages will appear in the very top right of the page (in the header) - this is where Edmund tells you what he's doing.</p>
+</div>
+</section>
+ 
+<section id="page-options" class="draw">
+<div class="menubar draw">
+<span>Page options</span><a href="#" onclick="hidePageOptionsDraw();">Close</a>
+</div>
+<p><a href="#" id="options-delete" class="button">Delete page</a></p>
+<p><strong>Note:</strong> Deleting a page renames it to the <em>deleted</em> category.</p>
+ 
+</section>
+ 
+<section id="children" class="draw">
+<div class="menubar draw">
+<span>Children</span><a href="#" onclick="hideChildrenDraw();">Close</a>
+</div>
+ 
+<p></p>
+ 
+<ul id="children-list">
+</ul>
+ 
+</section>
+ 
+<section id="tags" class="draw">
+<div class="menubar draw">
+<span>Tags</span><a href="#" onclick="hideTagsDraw();">Close</a>
+</div>
+ 
+<p></p>
+ 
+<ul id="tags-list">
+</ul>
+ 
+</section>
+ 
+<!--
+<section id="mass-editor" class="draw wide show">
+<div class="menubar draw">
+<span>Mass Editing Actions</span><a href="#" onclick="hideAllDraws();">Close</a></span>
+</div>
+<ul>
+</ul>
+ 
+<div id="dropzone">Drop pages here.</div>
+</section>
+-->
+ 
+<section id="about" class="draw">
+<div class="menubar draw">
+<span>About Edmund</span><a href="#" onclick="hideAboutDraw();">Close</a></span>
+</div>
+ 
+<div class="inner scrollable">
+ 
+<p><strong>Edmund</strong> let's you explore your Wikidot site like never before. He's currently in beta, so be careful - you never know when he might throw a tantrum. He especially doesn't like really big sites.</p>
+ 
+<p><strong>What's with the name?</strong></p>
+<p>Count Paweł <strong>Edmund</strong> Strzelecki was a Polish explorer who adventured across to Australia in the early 1800s. Among other things, Strzelecki climbed the highest peak, naming it Mount Kosciuszko, after Tadeusz Kościuszko, a national Hero of Poland. He's also in the first result when you search <em>Polish Explorer</em> on Google.</p>
+ 
+<p><strong>Credits</strong></p>
+<p>Edmund was hand crafted by <a href="http://bmccreative.com">BMC Creative</a>. A big thanks to <strong><a href="http://www.wikidot.com">Wikidot</a></strong> for building this awesome platform, <strong>Piotr Gabryjeluk</strong> for the jQuery API Library and <strong>James Kanjo</strong> for the date parser.</p>
+</div>
+</section>
+ 
+ </div>
+ 
+ <div id="activity"></div> 
+ 
+ </div>
+ 
+ <div id="settings">
+ <h4>Settings</h4>
+ <form name="settings-form" id="settings-form" class="settings-form">
+ <label for="settings-site">Site:</label>
+ <input type="text" name="settings-site" id="settings-site" value="" />
+ <label for="settings-site" class="url-end">.wikidot.com</label><br>
+ 
+ <label for="settings-api-key">API Key:</label>
+ <input type="text" name="settings-api-key" id="settings-api-key" value="" /><br>
+ 
+ <input type="submit" name="settings-submit" value="Go Explore..." onsubmit="return false;" />
+ </form>
+ <h4>Options</h4>
+ <form class="settings-form" onsubmit="return false;">
+ <label for="settings-notifications" class="checkbox-label">Send watching notifcations:</label>
+ <input type="checkbox" name="settings-notifications" id="settings-notifications" value="" /><br>
+ </form>
+ <a href="#" class="settings-close">Close</a>
+ </div>
+ 
+<footer>
+<div class="left">
+Edmund v0.6.4 beta | <a href="#" onclick="hideAllDraws(); showIntroDraw();">Intro</a> | <a href="#" onclick="hideAllDraws(); showAboutDraw();">About</a> | <a href="#settings">Settings</a>
+</div>
+<div class="right">
+Brought to you by <a href="http://bmccreative.com">BMC Creative</a>
+</div>
+</footer>
+</body>
+</html>

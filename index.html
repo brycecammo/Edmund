@@ -33,37 +33,13 @@ var showIntro = function() {
         $('#main section').removeClass('current');
         $('#main-intro').addClass('current');
 };
- 
-//Show & hide draws
-var showChildrenDraw = function() {
-        $('#children').addClass('show');
+
+//Universal show/hide draws
+var showDraw = function(draw) {
+		$('#' + draw).addClass('show');
 };
-var hideChildrenDraw = function(draw) {
-        $('#children').removeClass('show');
-};
-var showTagsDraw = function() {
-        $('#tags').addClass('show');
-};
-var hideTagsDraw = function(draw) {
-        $('#tags').removeClass('show');
-};
-var showAboutDraw = function() {
-        $('#about').addClass('show');
-};
-var hideAboutDraw = function(draw) {
-        $('#about').removeClass('show');
-};
-var showIntroDraw = function() {
-        $('#intro').addClass('show');
-};
-var hideIntroDraw = function(draw) {
-        $('#intro').removeClass('show');
-};
-var showPageOptionsDraw = function() {
-        $('#page-options').addClass('show');
-};
-var hidePageOptionsDraw = function(draw) {
-        $('#page-options').removeClass('show');
+var hideDraw = function(draw) {
+		$('#' + draw).removeClass('show');
 };
 var hideAllDraws = function(draw) {
         $('.draw').removeClass('show');
@@ -234,7 +210,7 @@ $('a.page-link').live('click', function() {
 //If a page link is clicked from a draw, load that page & close the draw 
 $('section.draw a.page-link').live('click', function() {
     getPageMeta($(this).attr('title'));
-    $('.draw').removeClass('show');
+    hideAllDraws();
 });
  
 //Generate category list
@@ -307,7 +283,7 @@ var getChildList = function(parent) {
 $('#show-children-link').live('click', function() {
     getChildList($(this).attr('title'));
     hideAllDraws();
-    showChildrenDraw(); 
+    showDraw('children'); 
 });
  
 //Get list of tags for the entire site
@@ -380,7 +356,7 @@ var getPageTagsList = function(page) {
 $('#show-tags-link').live('click', function() {
     getPageTagsList($(this).attr('title'));
     hideAllDraws();
-    showTagsDraw();
+    showDraw('tags');
 });
 $('#show-site-tags-link').live('click', function() {
     getSiteTagsList();
@@ -602,21 +578,17 @@ $('#meta-name').editable(function(value, settings) {
 //When launch button is clicked, get category list
 $('#launch-button').live('click', function() {
        getCatList(); 
-       hideIntroDraw();
+       hideDraw('intro');
 });
  
 //When settings form is submitted, hide draws, close settings window & load category list
 $('#settings-form').submit(function() {
        getCatList(); 
-       hideIntroDraw();
+       hideDraw('intro');
        close_settings();
        return false;
 });    
  
-//When page options link is clicked, open page options draw
-$('#page-options-link').live('click', function() {
-       showPageOptionsDraw(); 
-});
 
  
 });
@@ -657,7 +629,7 @@ $('#page-options-link').live('click', function() {
  <div class="menubar main">
  <span id="info-site"></span> <span id="info-page"></span>
  <a href="#" id="save-page-submit">Save Changes</a>
- <a href="#" id="page-options-link">Page Options</a>
+ <a href="#" id="page-options-link" onclick="showDraw('page-options');">Page Options</a>
  </div>
  <div class="notification-center">
  <div id="notify-notifications" title="Email notifications will be sent"></div>
@@ -671,7 +643,7 @@ $('#page-options-link').live('click', function() {
  
  <table class="page-meta left">
  <tr>
- <td>Fullname</td><td id="meta-name" class="editable" title="Click to rename the page"></td>
+ <td>Fullname</td><td id="meta-name" class="editable"></td>
  </tr>
  <tr>
  <td>Created by</td><td id="meta-created_by"></td>
@@ -726,7 +698,7 @@ $('#page-options-link').live('click', function() {
  
 <section id="intro" class="draw wide show">
 <div class="menubar draw">
-<span>Welcome to Edmund</span><a href="#" onclick="hideIntroDraw();">Close</a>
+<span>Welcome to Edmund</span><a href="#" onclick="hideDraw('intro');">Close</a>
 </div>
  
 <div class="inner scrollable">
@@ -753,7 +725,7 @@ $('#page-options-link').live('click', function() {
  
 <section id="page-options" class="draw">
 <div class="menubar draw">
-<span>Page options</span><a href="#" onclick="hidePageOptionsDraw();">Close</a>
+<span>Page options</span><a href="#" onclick="hideDraw('page-options');">Close</a>
 </div>
 <p><a href="#" id="options-delete" class="button">Delete page</a></p>
 <p><strong>Note:</strong> Deleting a page renames it to the <em>deleted</em> category.</p>
@@ -762,7 +734,7 @@ $('#page-options-link').live('click', function() {
  
 <section id="children" class="draw">
 <div class="menubar draw">
-<span>Children</span><a href="#" onclick="hideChildrenDraw();">Close</a>
+<span>Children</span><a href="#" onclick="hideDraw('children');">Close</a>
 </div>
  
 <p></p>
@@ -774,7 +746,7 @@ $('#page-options-link').live('click', function() {
  
 <section id="tags" class="draw">
 <div class="menubar draw">
-<span>Tags</span><a href="#" onclick="hideTagsDraw();">Close</a>
+<span>Tags</span><a href="#" onclick="hideDraw('tags');">Close</a>
 </div>
  
 <p></p>
@@ -784,21 +756,9 @@ $('#page-options-link').live('click', function() {
  
 </section>
  
-<!--
-<section id="mass-editor" class="draw wide show">
-<div class="menubar draw">
-<span>Mass Editing Actions</span><a href="#" onclick="hideAllDraws();">Close</a></span>
-</div>
-<ul>
-</ul>
- 
-<div id="dropzone">Drop pages here.</div>
-</section>
--->
- 
 <section id="about" class="draw">
 <div class="menubar draw">
-<span>About Edmund</span><a href="#" onclick="hideAboutDraw();">Close</a></span>
+<span>About Edmund</span><a href="#" onclick="hideDraw('about');">Close</a></span>
 </div>
  
 <div class="inner scrollable">
@@ -841,7 +801,7 @@ $('#page-options-link').live('click', function() {
  
 <footer>
 <div class="left">
-Edmund v0.6.4 beta | <a href="#" onclick="hideAllDraws(); showIntroDraw();">Intro</a> | <a href="#" onclick="hideAllDraws(); showAboutDraw();">About</a> | <a href="#settings">Settings</a>
+Edmund v0.6.4 beta | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="#settings">Settings</a>
 </div>
 <div class="right">
 Brought to you by <a href="http://bmccreative.com">BMC Creative</a>

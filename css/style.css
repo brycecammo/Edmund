@@ -4,7 +4,7 @@
 
 Edmund - Wikidot Explorer
 
-Version: 1.02
+Version: 1.03
 Author: BMC Creative
 Author Website: http://bmccreative.com
  
@@ -167,6 +167,7 @@ header h1 {
 	width: 221px;
 	height: 100%;
 	min-height: 350px;
+	
 }
 #info-site {
 	font-weight: bold;
@@ -177,7 +178,8 @@ header h1 {
 	right: -11px;
 	padding: 0 10px;
 	height: 30px;
-	color: #cfdae2;
+	color: #dce4ea;
+	line-height: 28px;
 	font-weight: bold;
 	text-shadow: 0 1px 1px rgba(0,0,0,0.3);
 	border-left: 1px solid #728a9a;
@@ -204,7 +206,7 @@ header h1 {
 #sidebar li a {
 	display: block;
 	padding: 5px 0 5px 10px;
-	width: 221px;
+	width: 211px;
 	color: #686969;
 }
 #sidebar li a:hover {
@@ -212,13 +214,11 @@ header h1 {
 	background: #fff;;
 }
 #sidebar h4 {
-	margin: 0 0 0;
+	margin: 1px 0 0;
 	font-size: 12px;
-	line-height: 24px;
-	padding: 1px 0 0;
-	position: absolute;
-	left: 0;
-	top: 0;
+	line-height: 25px;
+	display: block;
+	float: left;
 }
 .sidebar-list-container.right h4 {
 	left: 35px !important;
@@ -230,15 +230,17 @@ header h1 {
 }
 .count {
 	position: absolute;
-	right: 20px;
-	top: 4px;
-	padding: 1px 5px;
+	right: 10px;
+	top: 5px;
+	padding: 0;
 	color: #3a596e;
-	min-width: 15px;
+	width: 40px;
+	text-align: right;
 }
 #side-menubar {
+	position: relative;
 	margin: 10px 0 0;
-	padding: 0px 10px 5px;
+	padding: 1px 0 5px;
 	height: 20px;
 	overflow: hidden;
 	color: #58656e;
@@ -255,11 +257,30 @@ header h1 {
 	-moz-box-shadow: 0 1px 0 #fff inset, 0 1px 1px rgba(0,0,0,0.04);
 	box-shadow: 0 1px 0 #fff inset, 0 1px 1px rgba(0,0,0,0.04);
 }
+#side-menubar .sidebar-list-container {
+	position: absolute;
+	top: 0;
+	width: 200px;
+}
 a.menubar-back {
 	float: left;
 	position: relative;
-	top: 6px;
+	top: 2px;
+	left: -5px;
 	font-size: 10px;
+	display: block;
+	height: 22px;
+	width: 15px;
+	color: transparent;
+	font-size: 0;
+	line-height: 0;
+	text-indent: -9999px;
+	background: url(https://css3.wdfiles.com/local--files/edmund/back-arrow.png) no-repeat 50% 50%;
+	opacity: 0.7;
+	-webkit-transition: opacity 200ms linear;
+}
+a.menubar-back:hover {
+	opacity: 1;
 }
 /* Dynamic Sidebar */
 #sidebar-lists {
@@ -276,6 +297,8 @@ a.menubar-back {
 	transition: left 400ms ease-out;
 }
 div.sidebar-list-container {
+	height: 25px;
+	padding: 0 10px;
 	-webkit-transition-delay:75ms;
 	-moz-transition-delay:75ms;
 	transition-delay:75ms;
@@ -294,7 +317,7 @@ div.sidebar-list-container {
 	overflow: hidden;
 }
 ul.sidebar-list-container {
-	overflow-x: hidden;
+	overflow-x: ;
 	overflow-y: auto;
 	position: absolute;
 	top: 0;
@@ -368,7 +391,7 @@ footer .right {
 	width: 20px;
 	height: 20px;
 	float: right;
-	background: url(http://bmcenterprises.wdfiles.com/local--files/images/email1a.png);
+	background: url(https://bmcenterprises.wdfiles.com/local--files/images/email1a.png);
 	opacity: 0;
 	-webkit-transition: opacity 300ms ease-out;
 	-moz-transition: opacity 300ms ease-out;
@@ -525,9 +548,9 @@ section.draw {
 	-webkit-box-shadow: 0 0 2px rgba(0,0,0,0.3);
 	-moz-box-shadow: 0 0 2px rgba(0,0,0,0.3);
 	box-shadow: 0 0 2px rgba(0,0,0,0.3);
-	-webkit-transition: right 500ms ease-out;
-	-moz-transition: right 500ms ease-out;
-	transition: right 500ms ease-out;
+	-webkit-transition: right 550ms ease-out;
+	-moz-transition: right 550ms ease-out;
+	transition: right 550ms ease-out;
 	-webkit-background-clip: padding-box;
 	background-clip: padding-box;
 }
@@ -537,6 +560,18 @@ section.draw {
 }
 .draw.show {
 	right: -1px;
+	-webkit-transition: right 500ms ease-out;
+	-moz-transition: right 500ms ease-out;
+	transition: right 500ms ease-out;
+}
+.draw.show.nudge {
+	right: 29px;
+	-webkit-transition: right 280ms ease-out 100ms;
+	-moz-transition: right 280ms ease-out 100ms;
+	transition: right 280ms ease-out 100ms;
+}
+.draw.nudge a {
+	pointer-events: none;
 }
 .draw .inner {
 	position: absolute;
@@ -584,7 +619,16 @@ section.draw {
 
 /* Tags */
 #tags-list {
-	margin: 0 10px;
+	margin: 0;
+	padding: 3px 10px 0;
+	width: 200px;
+	position: absolute;
+	top: 100px;
+	bottom: 0px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	border-top: 1px solid #eaeef1;
+	-webkit-box-shadow: 0 1px 2px #fff inset;
 }
 #tags li {
 	display: inline-block;
@@ -594,7 +638,8 @@ section.draw {
 	-moz-box-shadow: none;
 	box-shadow: none;
 }
-#tags li a {
+#tags li a,
+.tag {
 	display: inline-block;
 	width: auto;
 	margin: 2px 5px;
@@ -609,6 +654,13 @@ section.draw {
 	-webkit-border-radius: 20px;
 	-moz-border-radius: 20px;
 	border-radius: 20px;	
+}
+#tagged-pages-list {
+	position: absolute;
+	top: 81px;
+	bottom: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 
 /* Scrollbars */
@@ -833,3 +885,5 @@ input[type="text"]:focus, .jedit input:focus {
   .tipsy-e .tipsy-arrow, .tipsy-w .tipsy-arrow { top: 50%; margin-top: -5px; }
   .tipsy-e .tipsy-arrow { right: 0; border-right: none; }
   .tipsy-w .tipsy-arrow { left: 0; border-left: none; }
+ 
+

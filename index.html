@@ -64,6 +64,20 @@ function close_settings() {
            var settingsSite = $('#settings-site').val();
            window.location.hash = '#';
 }
+
+//Allow for parameters to passed via the URL
+function url_param(name) {
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+    if( results === null ) {
+    return "";
+    }
+   else {
+    return results[1];
+	}
+}
  
 $(document).ready(function() {
  
@@ -126,7 +140,7 @@ var clearLoadingMessage = function() {
 };
  
 //Generate page structure
-var getPageMeta = function(page) {
+window.getPageMeta = function(page) {
  
         loadingMessage('Loading page...');
  
@@ -228,7 +242,7 @@ $('section.draw a.page-link').live('click', function() {
 });
  
 //Generate category list
-var getCatList = function(category) {
+var getCatList = function() {
  
     loadingMessage('Loading site...');
  
@@ -640,7 +654,19 @@ $('#settings-form').submit(function() {
        close_settings();
        return false;
 });    
- 
+
+//Get site & page from URL
+var urlSite = url_param('site');
+var urlPage = url_param('page');
+
+if (urlSite.length) {
+	$('#settings-site').val(urlSite);
+	update_site();
+	localStorage.setItem('wikidot_site', urlSite);
+	getCatList();
+	getPageMeta(urlPage);
+	hideAllDraws();
+};
 
  
 });
@@ -865,7 +891,7 @@ $('#settings-form').submit(function() {
  
 <footer>
 <div class="left">
-Edmund v0.6.5 alpha | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="#settings">Settings</a>
+Edmund v0.71 beta | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="#settings">Settings</a>
 </div>
 <div class="right">
 Brought to you by <a href="http://bmccreative.com">BMC Creative</a>

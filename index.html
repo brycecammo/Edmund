@@ -798,6 +798,12 @@ if (urlSite.length) {
 <p>The main window shows all the meta information attached to the page as well as the content of the page. Fields that change colour when you hover over them can be edited - click to edit their contents, then press enter or the save button to save your changes locally. Once you've edited all that you want to, click the <em>Save Changes</em> button in the top right to export the page to your Wikidot site.</p>
  
 <p>Status messages will appear in the very top right of the page (in the header) - this is where Edmund tells you what he's doing.</p>
+
+<p><strong>'Open in Edmund' Bookmarlet</strong></p>
+
+<p>Since version 0.71, Edmund supports importing a page using a bookmarlet. Drag the button below to your bookmarks bar, and when on a Wikidot page, click it to import that page into Edmund. It does not currently support custom domains.</p>
+
+<p><a href="javascript:domain=WIKIREQUEST.info.domain.match(/^(.*?)\.wikidot\.com$/);if(domain){unix=WIKIREQUEST.info.pageUnixName;window.location='https://css3.wdfiles.com/edmund/code/1#?site='+domain[1]+'&page='+unix}else{alert('Custom domains are not yet supported.');}" id="launch-button">Open in Edmund</a></p>
 </div>
 </section>
  
@@ -891,7 +897,7 @@ if (urlSite.length) {
  
 <footer>
 <div class="left">
-Edmund v0.71 beta | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="#settings">Settings</a>
+Edmund v0.71.1 beta | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="#settings">Settings</a>
 </div>
 <div class="right">
 Brought to you by <a href="http://bmccreative.com">BMC Creative</a>

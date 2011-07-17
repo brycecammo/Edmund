@@ -4,7 +4,7 @@
 
 Edmund - Wikidot Explorer
 
-Version: 1.03
+Version: 1.04
 Author: BMC Creative
 Author Website: http://bmccreative.com
  
@@ -317,7 +317,7 @@ div.sidebar-list-container {
 	overflow: hidden;
 }
 ul.sidebar-list-container {
-	overflow-x: ;
+	overflow-x: hidden;
 	overflow-y: auto;
 	position: absolute;
 	top: 0;
@@ -327,16 +327,6 @@ ul.sidebar-list-container {
 	background: white;
 	left: 0;
 }
-#sidebar:after {
-	content: '';
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	height: 10px;
-	background: url(https://bmcenterprises.wdfiles.com/local--files/images/fader-bottom.png) repeat-x 0 100%;
-}
-
 #main {
 	width: 718px;
 	padding: 10px;
@@ -623,7 +613,7 @@ section.draw {
 	padding: 3px 10px 0;
 	width: 200px;
 	position: absolute;
-	top: 100px;
+	top: 106px;
 	bottom: 0px;
 	overflow-x: hidden;
 	overflow-y: auto;

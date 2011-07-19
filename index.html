@@ -4,13 +4,14 @@
 <title>Edmund - Wikidot Explorer</title>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js"></script>
-<script type="text/javascript" src="https://jquery-wikidot-api.wdfiles.com/local--code/code:jquery-cookie"></script>
 <script type="text/javascript" src="https://jquery-wikidot-api.wdfiles.com/local--code/code:jquery-wikidot-api"></script>
 <script type="text/javascript" src="https://bmcenterprises.wdfiles.com/local--files/images/jquery.jeditable.min.js"></script>
 <script type="text/javascript" src="https://css3.wdfiles.com/local--code/admin:tipsy-js"></script>
-<script src="https://css3.wdfiles.com/local--code/admin:friendly-date/1" type="text/javascript"></script>
+<script type="text/javascript" src="https://css3.wdfiles.com/local--files/files/jquery.alerts.js"></script>
+<script type="text/javascript" src="https://css3.wdfiles.com/local--code/admin:friendly-date/1"></script>
  
 <link rel="stylesheet" href="https://css3.wdfiles.com/local--code/admin:explorer-css/1" type="text/css" />
+
  
 <script type="text/javascript">
  
@@ -33,30 +34,30 @@ var showIntro = function() {
         $('#main section').removeClass('current');
         $('#main-intro').addClass('current');
 };
-
+ 
 //Universal show/hide draws
 var showDraw = function(draw) {
-		$('#' + draw).addClass('show');
+        $('#' + draw).addClass('show');
 };
 var hideDraw = function(draw) {
-		$('#' + draw).removeClass('show nudge');
+        $('#' + draw).removeClass('show nudge');
 };
 var nudgeDraw = function(draw) {
-		$('#' + draw).addClass('nudge');
+        $('#' + draw).addClass('nudge');
 };
 var unNudgeDraw = function(draw) {
-		$('#' + draw).removeClass('nudge');
+        $('#' + draw).removeClass('nudge');
 };
 var hideAllDraws = function(draw) {
         $('.draw').removeClass('show nudge');
 };
-
+ 
 //If a nudged draw is clicked, remove the 'nudge' class & close other draws
 $('section.draw.nudge').live('click', function() {
     $('section.draw:not(.nudge)').removeClass('show'); //Close other draws
     $(this).removeClass('nudge'); //Return to normal position
     console.log('nudge draw clicked');
-    
+ 
 });
  
 //Close settings window (called on click of submit button)  
@@ -64,7 +65,7 @@ function close_settings() {
            var settingsSite = $('#settings-site').val();
            window.location.hash = '#';
 }
-
+ 
 //Allow for parameters to passed via the URL
 function url_param(name) {
   name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
@@ -76,10 +77,13 @@ function url_param(name) {
     }
    else {
     return results[1];
-	}
+    }
 }
  
 $(document).ready(function() {
+
+//Tabbed interface
+$('#mass-tabs').tabs({ fx: { height: 'toggle', opacity: 'toggle' } });
  
 //Initialise API settings, & define users API key
 var update_wd = function() {
@@ -220,7 +224,17 @@ var getPageList = function(category) {
  
             //Generate new pages
             for(i=0; i<totalPages; i++) { 
-                pageListItems += '<li><a href="#" class="page-link" title="' + data[i] + '">' + data[i] + '</a></li>';
+                if ($('#mass-editor-toggle').is(':checked')) {
+                	if($.inArray(data[i], massEditorPagesArray) > -1) {
+                		pageListItems += '<li><a href="#" class="page-link edit disabled" data-category="' + category + '" title="' + data[i] + '">' + data[i] + '</a></li>';
+                	}
+                	else {
+						pageListItems += '<li><a href="#" class="page-link edit" data-category="' + category + '" title="' + data[i] + '">' + data[i] + '</a></li>';
+					}
+                }
+                else {
+	                pageListItems += '<li><a href="#" class="page-link" data-category="' + category + '" title="' + data[i] + '">' + data[i] + '</a></li>';
+                }
             }
             pageList.html(pageListItems);
             $('#info-page-count').html('(' + totalPages + ')');
@@ -232,7 +246,8 @@ var getPageList = function(category) {
 };
  
 //If a page link is clicked, load that page in the editor.
-$('a.page-link').live('click', function() {
+
+$('a.page-link:not(.edit)').live('click', function() {
     getPageMeta($(this).attr('title'));
 });
 //If a page link is clicked from a draw, load that page & close the draw 
@@ -269,7 +284,13 @@ var getCatList = function() {
 //If category link in sidebar is clicked, generate page list
 $('a.category-link').live('click', function() {
     getPageList($(this).attr('title'));
-    $('#info-category').html($(this).attr('title'));
+    if ($('#mass-editor-toggle').is(':checked')) {
+    	$('#info-category').html('<a href="#" class="category-title-link edit" title="Click to add all pages in this category to the mass editor." data-category="' + $(this).attr("title") + '">' + $(this).attr("title") + '</a>');
+    }
+    else {
+		$('#info-category').html('<a href="#" class="category-title-link disabled" title="Click to add all pages in this category to the mass editor." data-category="' + $(this).attr("title") + '">' + $(this).attr("title") + '</a>');
+	}
+	$('#info-category a').tipsy({gravity: 's', fade: true});
     goToPageList();
 });
  
@@ -389,7 +410,7 @@ $('#show-tags-link').live('click', function() {
 $('#show-site-tags-link').live('click', function() {
     getSiteTagsList();
 });
-
+ 
 //Tagged Pages list
 var getTaggedPagesList = function(tag) {
  
@@ -403,7 +424,7 @@ var getTaggedPagesList = function(tag) {
             if(data) {
  
             clearLoadingMessage();
-            
+ 
             $('#tagged-pages').find('p').html('<span class="tag">' + tag + '</span>');
  
             var TaggedPagesList = $('#tagged-pages-list');
@@ -416,11 +437,11 @@ var getTaggedPagesList = function(tag) {
             TaggedPagesList.html(TaggedPagesListItems);
             }
             else {
- 			
+ 
             }
         });
 };
-
+ 
 //If a tag is clicked, open the tagged pages draw, load the list & nudge the tags draw
 $('.tag-link').live('click', function() {
     getTaggedPagesList($(this).attr('title'));
@@ -645,32 +666,185 @@ $('#meta-name').editable(function(value, settings) {
 $('#launch-button').live('click', function() {
        getCatList(); 
        hideDraw('intro');
+       $('#sidebar').removeClass('disabled');
 });
  
 //When settings form is submitted, hide draws, close settings window & load category list
 $('#settings-form').submit(function() {
        getCatList(); 
+       goToCategoryList();
        hideDraw('intro');
        close_settings();
        return false;
 });    
-
+ 
 //Get site & page from URL
 var urlSite = url_param('site');
 var urlPage = url_param('page');
-
+ 
 if (urlSite.length) {
-	$('#settings-site').val(urlSite);
-	update_site();
-	localStorage.setItem('wikidot_site', urlSite);
-	getCatList();
-	getPageMeta(urlPage);
-	hideAllDraws();
-};
+    $('#settings-site').val(urlSite);
+    update_site();
+    localStorage.setItem('wikidot_site', urlSite);
+    getCatList();
+    getPageMeta(urlPage);
+    hideAllDraws();
+}
 
+//Mass Editor //
+//Initialise mass editor array
+var massEditorPagesArray = [];
+var massEditorPagesList = $('#mass-editor-pages');
+var massEditorPagesListItems = '';
+
+
+
+var update_massEditorPagesList = function() {
+        massEditorPagesList.html(''); //Reset list
+        massEditorPagesListItems = '';
+        for(i=0; i<massEditorPagesArray.length; i++) { 
+            massEditorPagesListItems += '<li><a href="#" class="mass-editor-page-link" title="' + massEditorPagesArray[i] + '">' + massEditorPagesArray[i] + '</a></li>'; //Generate new items
+        }
+        massEditorPagesList.html(massEditorPagesListItems); //Add items to list
+};
  
+//Begin mass editor...
+$('#mass-editor-toggle').live('click', function() {
+    if ($('#mass-editor-toggle').is(':checked')) {
+            showDraw('mass-editor'); //Show mass editor draw
+            $('a.page-link').addClass('edit'); //Show edit option on page links   
+            $('a.category-link').addClass('edit'); 
+            $('a.category-title-link').addClass('edit').removeClass('disabled');
+      }
+    else {
+            $('a.page-link').removeClass('edit disabled');
+            $('a.category-link').removeClass('edit disabled');
+            $('a.category-title-link').removeClass('edit').addClass('disabled');
+            hideDraw('mass-editor');
+        }
+}); 
+
+//Add individual pages to mass editor
+$('a.page-link.edit').live('click', function() { 
+    massEditorPagesArray.push($(this).attr('title')); //When a page is clicked, add it to the array 
+    $(this).addClass('disabled'); //Add disabled class => pointer-events:none; in CSS.
+    update_massEditorPagesList(); 
 });
- 
+
+//Add a whole category to mass editor
+$('a.category-title-link.edit').live('click', function() { 
+    $(this).addClass('disabled'); //Disable category link
+    console.log('Data category:' + $(this).attr('data-category'));
+    $('a.page-link.edit[data-category="' + $(this).attr('data-category') + '"]').each(function() {
+        massEditorPagesArray.push($(this).attr('title'));
+        $(this).addClass('disabled'); //Disable each page link
+        update_massEditorPagesList(); 
+    });
+});
+
+//Remove item from array
+function removeMassEditorPage(page){
+    for(var i=0; i<massEditorPagesArray.length; i++){
+        if(massEditorPagesArray[i] == page){
+            massEditorPagesArray.splice(i, 1);
+            break;
+        }
+    }
+}
+
+$('a.mass-editor-page-link').live('click', function() { 
+    removeMassEditorPage($(this).attr('title')); //When a mass editor page is clicked, remove it from the array
+    $('a.page-link[title="' + $(this).attr('title') + '"]').removeClass('disabled'); //Remove disabled class from main pages list in sidebar
+    update_massEditorPagesList();
+});
+
+$('a.clear-mass-editor').live('click', function() { 
+    massEditorPagesArray.splice(0,massEditorPagesArray.length); //Clear the array
+    console.log('Array cleared');
+    console.log(massEditorPagesArray);
+    update_massEditorPagesList();
+    $('a.page-link.edit').removeClass('disabled'); //Return pages in list to normal state
+    $('a.category-title-link.edit').removeClass('disabled');
+    });
+
+//Mass Function - change tags
+function mass_changeTags(index) {
+    var thisPage = massEditorPagesArray[index];
+    var totalPagesToTag = massEditorPagesArray.length;
+    var thisPageNumber = index + 1;
+    
+    if(massEditorPagesArray.length === 0) {
+        jAlert('Hmm, you haven\'t selected any pages yet. Select pages to tag using the list on the left.', 'No pages selected', function(r) {
+        	$('#mass-tags-submit').removeClass('disabled');
+        });
+        
+    }
+    else {
+    
+        if(thisPage) {
+        
+                if($('#mass-tags-removeAll').is(':checked')) {
+                        loadingMessage('Tagging page: ' + thisPage + ' (' + thisPageNumber + '/' + totalPagesToTag + ')');
+                        wd.pages.save_one({'site': wdSite, 'page': thisPage, 'tags': []}, function(data) {console.log('Done. Removed all tags.');mass_changeTags(index + 1);});
+                    
+                }
+                
+                else {
+        
+                loadingMessage('Tagging page: ' + thisPage + ' (' + thisPageNumber + '/' + totalPagesToTag + ')');
+        
+               wd.pages.get_one({'site': wdSite, 'page': thisPage}, function(data) {
+               
+                   var massTags_existing = data.tags;
+                   var massTags_add = $('#mass-tags-add').val().split(' ');
+                   var massTags_remove = $('#mass-tags-remove').val().split(' ');
+                   
+                   //Remove tags
+                   $.each(massTags_remove, function(index, value) {
+                                      for(var i=0; i<massTags_existing.length; i++){
+                                          if(massTags_existing[i] == value){
+                                              massTags_existing.splice(i, 1);
+                                              break;
+                                          }
+                                  }
+                   });
+                   
+                   $.merge(massTags_existing, massTags_add); //Merge existing tags (- removed tags) with tags to add
+               
+               wd.pages.save_one({'site': wdSite, 'page': thisPage, 'tags': massTags_existing}, function(data) {console.log('Done');mass_changeTags(index + 1);});
+               
+               }); 
+        }
+        }
+        else {
+        loading.html('Pages have been tagged.').delay(3000).fadeOut(200);
+        $('#mass-tags-submit').removeClass('disabled');
+        }
+    
+ }
+}
+
+$('#mass-tags-submit').click(function() {
+      jConfirm('This will edit the tags on all of the pages you have selected. Are you sure you want to continue?', 'Please confirm', function(r) {
+          if(r == true) {
+          	mass_changeTags(0);
+          	$('#mass-tags-submit').addClass('disabled');
+          }
+      });    
+});
+
+//Disable form elements when 'remove all tags' is checked
+var massTags_removeInput = $('#mass-tags-remove');
+$('#mass-tags-removeAll').click(function() {
+        if ($(this).is(':checked')) {
+                massTags_removeInput.attr('disabled', true);
+            } else {
+                massTags_removeInput.removeAttr('disabled');
+            }
+
+});
+
+}); 
 </script>
  
 </head>
@@ -684,8 +858,22 @@ if (urlSite.length) {
  
 <div id="content">
  
-<div id="sidebar">
+<div id="sidebar" class="disabled">
 <div class="menubar side"><a href="#settings">Settings</a></div>
+ 
+ <form onsubmit="return false;" class="switch-form">
+ <label for="mass-editor-toggle" class="switch-label">
+ <span>Editor mode:</span>
+ <input type="checkbox" name="mass-editor-toggle" id="mass-editor-toggle" class="switch-checkbox"/>
+ <div class="switch">
+ <div class="handle"></div>
+ <div class="track">
+ <span>Mass</span>
+ <span>Normal</span>
+ </div>
+ </div>
+ </label>
+ </form>
  
 <div id="side-menubar">
 <div class="sidebar-list-container left current"><h4>Categories</h4><span id="info-category-count" class="count"></span></div>
@@ -798,12 +986,69 @@ if (urlSite.length) {
 <p>The main window shows all the meta information attached to the page as well as the content of the page. Fields that change colour when you hover over them can be edited - click to edit their contents, then press enter or the save button to save your changes locally. Once you've edited all that you want to, click the <em>Save Changes</em> button in the top right to export the page to your Wikidot site.</p>
  
 <p>Status messages will appear in the very top right of the page (in the header) - this is where Edmund tells you what he's doing.</p>
-
+ 
 <p><strong>'Open in Edmund' Bookmarlet</strong></p>
-
+ 
 <p>Since version 0.71, Edmund supports importing a page using a bookmarlet. Drag the button below to your bookmarks bar, and when on a Wikidot page, click it to import that page into Edmund. It does not currently support custom domains.</p>
+ 
+<p><a href="javascript:domain=WIKIREQUEST.info.domain.match(/^(.*?)\.wikidot\.com$/);if(domain){unix=WIKIREQUEST.info.pageUnixName;window.location='https://css3.wdfiles.com/edmund/code/1#?site='+domain[1]+'&page='+unix}else{alert('Custom domains are not yet supported.');}" class="button">Open in Edmund</a></p>
+</div>
+</section>
 
-<p><a href="javascript:domain=WIKIREQUEST.info.domain.match(/^(.*?)\.wikidot\.com$/);if(domain){unix=WIKIREQUEST.info.pageUnixName;window.location='https://css3.wdfiles.com/edmund/code/1#?site='+domain[1]+'&page='+unix}else{alert('Custom domains are not yet supported.');}" id="launch-button">Open in Edmund</a></p>
+<section id="mass-editor" class="draw wide">
+<div class="menubar draw">
+<span>Mass Editor</span>
+</div>
+ 
+<div class="inner scrollable">
+
+<p>Select pages from the left to add to the mass editor. Clicking the category title will add all pages from that category.</p>
+
+<div class="mass-pages">
+<ul class="mass-editor-page-list">
+<li><a href="#" class="clear-mass-editor">Clear Mass Editor List</a></li>
+</ul>
+<ul id="mass-editor-pages" class="mass-editor-page-list">
+</ul>
+</div>
+<div id="mass-tabs" class="tab-container">
+<ul class="tabnav">
+<li><a href="#mass-tags">Tags</a></li>  
+<li><a href="#mass-rename">Rename</a></li>  
+<li><a href="#mass-export">Export</a></li> 
+</ul>
+
+<div id="mass-tags" class="tabdiv">
+<h4>Change Tags</h4>
+<p>Enter a space separated list of tags in the relevant fields below.</p>
+<table>
+<tr>
+<td>Tags to remove:</td><td><input type="text" name="mass-tags-remove" value="" id="mass-tags-remove" class="mass-tags-input" /></td>
+</tr>
+<tr>
+<td>Remove all tags:</td><td><input type="checkbox" name="mass-tags-removeAll" id="mass-tags-removeAll"/></td>
+</tr>
+<tr>
+<td>Tags to add:</td><td><input type="text" name="mass-tags-add" value="" id="mass-tags-add" class="mass-tags-input" /></td>
+</tr>
+</table>
+
+
+<input type="button" class="button" name="mass-tags-go" id="mass-tags-submit" value="Change Tags" />
+</div>
+
+<div id="mass-rename" class="tabdiv">
+<h4>Rename Pages</h4>
+<p>This feature is coming soon.</p>
+</div>
+
+<div id="mass-export" class="tabdiv">
+<h4>Export Pages</h4>
+<p>This feature is coming soon.</p>
+</div>
+
+</div>
+
 </div>
 </section>
  
@@ -839,7 +1084,7 @@ if (urlSite.length) {
 </ul>
  
 </section>
-
+ 
 <section id="tagged-pages" class="draw">
 <div class="menubar draw">
 <span>Tagged pages</span><a href="#" onclick="hideDraw('tagged-pages');unNudgeDraw('tags');">Close</a>
@@ -854,7 +1099,7 @@ if (urlSite.length) {
  
 <section id="about" class="draw">
 <div class="menubar draw">
-<span>About Edmund</span><a href="#" onclick="hideDraw('about');">Close</a></span>
+<span>About Edmund</span><a href="#" onclick="hideDraw('about');">Close</a>
 </div>
  
 <div class="inner scrollable">
@@ -897,11 +1142,12 @@ if (urlSite.length) {
  
 <footer>
 <div class="left">
-Edmund v0.71.1a beta | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="#settings">Settings</a>
+Edmund v0.75 beta | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="#settings">Settings</a>
 </div>
 <div class="right">
 Brought to you by <a href="http://bmccreative.com">BMC Creative</a>
 </div>
+
 </footer>
 </body>
 </html>

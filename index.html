@@ -1,19 +1,47 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Edmund - Wikidot Explorer</title>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js"></script>
-<script type="text/javascript" src="https://jquery-wikidot-api.wdfiles.com/local--code/code:jquery-wikidot-api"></script>
-<script type="text/javascript" src="https://bmcenterprises.wdfiles.com/local--files/images/jquery.jeditable.min.js"></script>
-<script type="text/javascript" src="https://css3.wdfiles.com/local--code/admin:tipsy-js"></script>
-<script type="text/javascript" src="https://css3.wdfiles.com/local--files/files/jquery.alerts.js"></script>
-<script type="text/javascript" src="https://css3.wdfiles.com/local--code/admin:friendly-date/1"></script>
+<!DOCTYPE html> 
  
-<link rel="stylesheet" href="https://css3.wdfiles.com/local--code/admin:explorer-css/1" type="text/css" />
-
+<!--
  
-<script type="text/javascript">
+     Edmund - Open source Wikidot site explorer
+     Copyright (c) 2011, Bryce Cameron.
+ 
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 3 as 
+    published by the Free Software Foundation.
+ 
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+ 
+    A copy of the GNU General Public License is available from
+    <http://www.gnu.org/copyleft/gpl.html>.
+ 
+--> 
+ 
+<html> 
+<head> 
+<title>Edmund - Wikidot Explorer</title> 
+ 
+<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Content-Script-Type" content="text/javascript"/>
+<meta name="description" content="Explore your Wikidot.com site with Edmund."/>
+<meta name="keywords" content="Wikidot, free, Edmund, explore"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=yes"/>
+ 
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script> 
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js"></script> 
+<script type="text/javascript" src="js/jquery.wikidot-api.js"></script> 
+<script type="text/javascript" src="https://bmcenterprises.wdfiles.com/local--files/images/jquery.jeditable.min.js"></script> 
+<script type="text/javascript" src="https://css3.wdfiles.com/local--code/admin:tipsy-js"></script> 
+<script type="text/javascript" src="https://css3.wdfiles.com/local--files/files/jquery.alerts.js"></script> 
+<script type="text/javascript" src="https://css3.wdfiles.com/local--code/admin:friendly-date/1"></script> 
+ 
+<link rel="stylesheet" href="https://css3.wdfiles.com/local--code/admin:explorer-css/1" type="text/css" /> 
+ 
+<script type="text/javascript"> 
  
 //Sidebar lists 
 var goToPageList = function() {
@@ -81,7 +109,7 @@ function url_param(name) {
 }
  
 $(document).ready(function() {
-
+ 
 //Tabbed interface
 $('#mass-tabs').tabs({ fx: { height: 'toggle', opacity: 'toggle' } });
  
@@ -122,11 +150,11 @@ var update_notifications = function() {
  
 $('#settings-notifications').click(function() {
     if ($('#settings-notifications').is(':checked')) {
-            console.log('yes, send notifications. Saved cookie.');
+            console.log('Yes, send notifications.');
             localStorage.setItem('wikidot_notifications', 'true'); 
         }
     else {
-            console.log('No, dont send notifications. Saved cookie.');
+            console.log('No, dont send notifications.');
             localStorage.setItem('wikidot_notifications', 'false'); 
         }
     update_notifications();
@@ -182,8 +210,6 @@ window.getPageMeta = function(page) {
              metaTagsArray += data.tags[i] + ' ';
              }
          }
-         else {
-         }
          $('#meta-tags').html(metaTagsArray);
  
          //Pre-load the hidden input fields
@@ -191,7 +217,7 @@ window.getPageMeta = function(page) {
          $('#save-page-original-name').val(data.fullname);
          $('#save-page-title').val(data.title);
          $('#save-page-parent').val(data.parent_fullname);
-         $('#save-page-tags').val(data.tags);
+         $('#save-page-tags').val(metaTagsArray);
  
          //Load pagename into "children" link
          $('#show-children-link').attr('title',data.fullname);
@@ -225,15 +251,15 @@ var getPageList = function(category) {
             //Generate new pages
             for(i=0; i<totalPages; i++) { 
                 if ($('#mass-editor-toggle').is(':checked')) {
-                	if($.inArray(data[i], massEditorPagesArray) > -1) {
-                		pageListItems += '<li><a href="#" class="page-link edit disabled" data-category="' + category + '" title="' + data[i] + '">' + data[i] + '</a></li>';
-                	}
-                	else {
-						pageListItems += '<li><a href="#" class="page-link edit" data-category="' + category + '" title="' + data[i] + '">' + data[i] + '</a></li>';
-					}
+                    if($.inArray(data[i], massEditorPagesArray) > -1) {
+                        pageListItems += '<li><a href="#" class="page-link edit disabled" data-category="' + category + '" title="' + data[i] + '">' + data[i] + '</a></li>';
+                    }
+                    else {
+                        pageListItems += '<li><a href="#" class="page-link edit" data-category="' + category + '" title="' + data[i] + '">' + data[i] + '</a></li>';
+                    }
                 }
                 else {
-	                pageListItems += '<li><a href="#" class="page-link" data-category="' + category + '" title="' + data[i] + '">' + data[i] + '</a></li>';
+                    pageListItems += '<li><a href="#" class="page-link" data-category="' + category + '" title="' + data[i] + '">' + data[i] + '</a></li>';
                 }
             }
             pageList.html(pageListItems);
@@ -246,7 +272,7 @@ var getPageList = function(category) {
 };
  
 //If a page link is clicked, load that page in the editor.
-
+ 
 $('a.page-link:not(.edit)').live('click', function() {
     getPageMeta($(this).attr('title'));
 });
@@ -285,12 +311,12 @@ var getCatList = function() {
 $('a.category-link').live('click', function() {
     getPageList($(this).attr('title'));
     if ($('#mass-editor-toggle').is(':checked')) {
-    	$('#info-category').html('<a href="#" class="category-title-link edit" title="Click to add all pages in this category to the mass editor." data-category="' + $(this).attr("title") + '">' + $(this).attr("title") + '</a>');
+        $('#info-category').html('<a href="#" class="category-title-link edit" title="Click to add all pages in this category to the mass editor." data-category="' + $(this).attr("title") + '">' + $(this).attr("title") + '</a>');
     }
     else {
-		$('#info-category').html('<a href="#" class="category-title-link disabled" title="Click to add all pages in this category to the mass editor." data-category="' + $(this).attr("title") + '">' + $(this).attr("title") + '</a>');
-	}
-	$('#info-category a').tipsy({gravity: 's', fade: true});
+        $('#info-category').html('<a href="#" class="category-title-link disabled" title="Click to add all pages in this category to the mass editor." data-category="' + $(this).attr("title") + '">' + $(this).attr("title") + '</a>');
+    }
+    $('#info-category a').tipsy({gravity: 's', fade: true});
     goToPageList();
 });
  
@@ -528,7 +554,6 @@ var savePage = function() {
    };
 //Save page on submit button click
 $('#save-page-submit').live('click', function() {
-    console.log('submit button clicked');
     savePage();
 });
  
@@ -613,7 +638,6 @@ var deletePage = function() {
    };
 //Delete page on 'delete' button click
 $('#options-delete').live('click', function() {
-    console.log('delete button clicked');
     deletePage();
 });
  
@@ -667,6 +691,11 @@ $('#launch-button').live('click', function() {
        getCatList(); 
        hideDraw('intro');
        $('#sidebar').removeClass('disabled');
+       var notify = localStorage.getItem('wikidot_notifications');
+       if (notify == null) {
+       		localStorage.setItem('wikidot_notifications', 'false');
+       }
+       update_notifications();
 });
  
 //When settings form is submitted, hide draws, close settings window & load category list
@@ -675,6 +704,7 @@ $('#settings-form').submit(function() {
        goToCategoryList();
        hideDraw('intro');
        close_settings();
+       $('#sidebar').removeClass('disabled');
        return false;
 });    
  
@@ -689,16 +719,15 @@ if (urlSite.length) {
     getCatList();
     getPageMeta(urlPage);
     hideAllDraws();
+    $('#sidebar').removeClass('disabled');
 }
-
+ 
 //Mass Editor //
 //Initialise mass editor array
 var massEditorPagesArray = [];
 var massEditorPagesList = $('#mass-editor-pages');
 var massEditorPagesListItems = '';
-
-
-
+ 
 var update_massEditorPagesList = function() {
         massEditorPagesList.html(''); //Reset list
         massEditorPagesListItems = '';
@@ -723,25 +752,24 @@ $('#mass-editor-toggle').live('click', function() {
             hideDraw('mass-editor');
         }
 }); 
-
+ 
 //Add individual pages to mass editor
 $('a.page-link.edit').live('click', function() { 
     massEditorPagesArray.push($(this).attr('title')); //When a page is clicked, add it to the array 
     $(this).addClass('disabled'); //Add disabled class => pointer-events:none; in CSS.
     update_massEditorPagesList(); 
 });
-
+ 
 //Add a whole category to mass editor
 $('a.category-title-link.edit').live('click', function() { 
     $(this).addClass('disabled'); //Disable category link
-    console.log('Data category:' + $(this).attr('data-category'));
     $('a.page-link.edit[data-category="' + $(this).attr('data-category') + '"]').each(function() {
         massEditorPagesArray.push($(this).attr('title'));
         $(this).addClass('disabled'); //Disable each page link
         update_massEditorPagesList(); 
     });
 });
-
+ 
 //Remove item from array
 function removeMassEditorPage(page){
     for(var i=0; i<massEditorPagesArray.length; i++){
@@ -751,53 +779,61 @@ function removeMassEditorPage(page){
         }
     }
 }
-
+ 
 $('a.mass-editor-page-link').live('click', function() { 
     removeMassEditorPage($(this).attr('title')); //When a mass editor page is clicked, remove it from the array
     $('a.page-link[title="' + $(this).attr('title') + '"]').removeClass('disabled'); //Remove disabled class from main pages list in sidebar
     update_massEditorPagesList();
 });
-
+ 
 $('a.clear-mass-editor').live('click', function() { 
     massEditorPagesArray.splice(0,massEditorPagesArray.length); //Clear the array
-    console.log('Array cleared');
-    console.log(massEditorPagesArray);
     update_massEditorPagesList();
     $('a.page-link.edit').removeClass('disabled'); //Return pages in list to normal state
     $('a.category-title-link.edit').removeClass('disabled');
     });
-
+ 
 //Mass Function - change tags
 function mass_changeTags(index) {
     var thisPage = massEditorPagesArray[index];
     var totalPagesToTag = massEditorPagesArray.length;
     var thisPageNumber = index + 1;
-    
+ 
     if(massEditorPagesArray.length === 0) {
         jAlert('Hmm, you haven\'t selected any pages yet. Select pages to tag using the list on the left.', 'No pages selected', function(r) {
-        	$('#mass-tags-submit').removeClass('disabled');
+            $('#mass-tags-submit').removeClass('disabled');
         });
-        
+ 
     }
     else {
-    
+ 
         if(thisPage) {
-        
+ 
                 if($('#mass-tags-removeAll').is(':checked')) {
                         loadingMessage('Tagging page: ' + thisPage + ' (' + thisPageNumber + '/' + totalPagesToTag + ')');
-                        wd.pages.save_one({'site': wdSite, 'page': thisPage, 'tags': []}, function(data) {console.log('Done. Removed all tags.');mass_changeTags(index + 1);});
-                    
+                        wd.pages.save_one({'site': wdSite, 'page': thisPage, 'tags': []}, function(data) {mass_changeTags(index + 1);});
+ 
                 }
-                
+ 
                 else {
-        
+ 
                 loadingMessage('Tagging page: ' + thisPage + ' (' + thisPageNumber + '/' + totalPagesToTag + ')');
-        
+ 
                wd.pages.get_one({'site': wdSite, 'page': thisPage}, function(data) {
-               
+ 
                    var massTags_existing = data.tags;
                    var massTags_add = $('#mass-tags-add').val().split(' ');
                    var massTags_remove = $('#mass-tags-remove').val().split(' ');
+                   
+                   var pageFullname = data.fullname;
+                   var pageParent = data.parent_fullname;
+                   if (pageParent == null) {pageParent = '';}
+                   var pageTitle = data.title.replace(/ /g, '-');
+                   
+                   var pageNameSplit = data.fullname.replace(':', ':::edmund-splitter:::');
+                   var pageNameArray = pageNameSplit.split(':::edmund-splitter:::');
+                   var pageName = pageNameArray[1];
+                   var pageCategory = pageNameArray[0];
                    
                    //Remove tags
                    $.each(massTags_remove, function(index, value) {
@@ -808,11 +844,18 @@ function mass_changeTags(index) {
                                           }
                                   }
                    });
-                   
+                                      
+                   //Variables in tags to add
+                                      
+                   $.each(massTags_add, function(index, value) {
+						var newTag = value.replace('%%fullname%%', pageFullname).replace('%%parent_fullname%%', pageParent).replace('%%title%%', pageTitle).replace('%%name%%', pageName).replace('%%category%%', pageCategory);
+						massTags_add[index] = newTag;                         
+                   });                   
+ 
                    $.merge(massTags_existing, massTags_add); //Merge existing tags (- removed tags) with tags to add
-               
-               wd.pages.save_one({'site': wdSite, 'page': thisPage, 'tags': massTags_existing}, function(data) {console.log('Done');mass_changeTags(index + 1);});
-               
+ 
+               wd.pages.save_one({'site': wdSite, 'page': thisPage, 'tags': massTags_existing}, function(data) {mass_changeTags(index + 1);});
+ 
                }); 
         }
         }
@@ -820,334 +863,393 @@ function mass_changeTags(index) {
         loading.html('Pages have been tagged.').delay(3000).fadeOut(200);
         $('#mass-tags-submit').removeClass('disabled');
         }
-    
+ 
  }
 }
-
+ 
 $('#mass-tags-submit').click(function() {
       jConfirm('This will edit the tags on all of the pages you have selected. Are you sure you want to continue?', 'Please confirm', function(r) {
           if(r == true) {
-          	mass_changeTags(0);
-          	$('#mass-tags-submit').addClass('disabled');
+              mass_changeTags(0);
+              $('#mass-tags-submit').addClass('disabled');
           }
       });    
 });
-
+ 
 //Disable form elements when 'remove all tags' is checked
 var massTags_removeInput = $('#mass-tags-remove');
+var massTags_addInput = $('#mass-tags-add');
 $('#mass-tags-removeAll').click(function() {
         if ($(this).is(':checked')) {
                 massTags_removeInput.attr('disabled', true);
+                massTags_addInput.attr('disabled', true);
             } else {
                 massTags_removeInput.removeAttr('disabled');
+                massTags_addInput.removeAttr('disabled');
             }
-
 });
 
+//Mass Editor - Rename Pages
+$('.mass-rename-input').attr('disabled', true);
+$(document.massRenameForm.massRename).click(function() {
+        if ($(this).is(':checked')) {
+        		$('.mass-rename-input').attr('disabled', true);
+                $('#mass-rename-' + $(this).attr('data-action')).removeAttr('disabled');
+            } 
+ });
+ 
 }); 
+</script> 
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-25082132-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
 </script>
  
-</head>
-<body id="top">
-<header>
-<div class="inner">
-<span id="loading"></span>
-<h1>Edmund - Wikidot Explorer</h1>
-</div>
-</header>
+</head> 
+<body id="top"> 
+<header> 
+<div class="inner"> 
+<span id="loading"></span> 
+<h1>Edmund - Wikidot Explorer</h1> 
+</div> 
+</header> 
  
-<div id="content">
+<div id="content"> 
  
-<div id="sidebar" class="disabled">
-<div class="menubar side"><a href="#settings">Settings</a></div>
+<div id="sidebar" class="disabled"> 
+<div class="menubar side"><a href="#settings">Settings</a></div> 
  
- <form onsubmit="return false;" class="switch-form">
- <label for="mass-editor-toggle" class="switch-label">
- <span>Editor mode:</span>
- <input type="checkbox" name="mass-editor-toggle" id="mass-editor-toggle" class="switch-checkbox"/>
- <div class="switch">
- <div class="handle"></div>
- <div class="track">
- <span>Mass</span>
- <span>Normal</span>
- </div>
- </div>
- </label>
- </form>
+ <form onsubmit="return false;" class="switch-form"> 
+ <label for="mass-editor-toggle" class="switch-label"> 
+ <span>Editor mode:</span> 
+ <input type="checkbox" name="mass-editor-toggle" id="mass-editor-toggle" class="switch-checkbox"/> 
+ <div class="switch"> 
+ <div class="handle"></div> 
+ <div class="track"> 
+ <span>Mass</span> 
+ <span>Normal</span> 
+ </div> 
+ </div> 
+ </label> 
+ </form> 
  
-<div id="side-menubar">
-<div class="sidebar-list-container left current"><h4>Categories</h4><span id="info-category-count" class="count"></span></div>
-<div class="sidebar-list-container right"><a href="#" class="menubar-back" onclick="goToCategoryList();">Back</a><h4 id="info-category"></h4><span id="info-page-count" class="count"></span></div>
-</div>
-<div id="sidebar-lists">
-<ul id="category-list" class="sidebar-list-container left current">
-</ul>
-<ul id="page-list" class="sidebar-list-container right">
+<div id="side-menubar"> 
+<div class="sidebar-list-container left current"><h4>Categories</h4><span id="info-category-count" class="count"></span></div> 
+<div class="sidebar-list-container right"><a href="#" class="menubar-back" onclick="goToCategoryList();">Back</a><h4 id="info-category"></h4><span id="info-page-count" class="count"></span></div> 
+</div> 
+<div id="sidebar-lists"> 
+<ul id="category-list" class="sidebar-list-container left current"> 
+</ul> 
+<ul id="page-list" class="sidebar-list-container right"> 
 </ul>    
-</div>
+</div> 
  
-</div>
+</div> 
  
- <div id="main">
+ <div id="main"> 
  
- <section id="main-editor">
+ <section id="main-editor"> 
  
- <div class="menubar main">
- <span id="info-site"></span> <span id="info-page"></span>
- <a href="#" id="save-page-submit">Save Changes</a>
- <a href="#" id="page-options-link" onclick="showDraw('page-options');">Page Options</a>
- </div>
- <div class="notification-center">
- <div id="notify-notifications" title="Email notifications will be sent"></div>
- </div>
- <div class="table-wrapper">
- <table class="page-meta full top">
- <tr>
- <td>Title</td><td id="meta-title" class="editable"></td>
- </tr>
- </table>
+ <div class="menubar main"> 
+ <span id="info-site"></span> <span id="info-page"></span> 
+ <a href="#" id="save-page-submit">Save Changes</a> 
+ <a href="#" id="page-options-link" onclick="showDraw('page-options');">Page Options</a> 
+ </div> 
+ <div class="notification-center"> 
+ <div id="notify-notifications" title="Email notifications will be sent"></div> 
+ </div> 
+ <div class="table-wrapper"> 
+ <table class="page-meta full top"> 
+ <tr> 
+ <td>Title</td><td id="meta-title" class="editable"></td> 
+ </tr> 
+ </table> 
  
- <table class="page-meta left">
- <tr>
- <td>Fullname</td><td id="meta-name" class="editable"></td>
- </tr>
- <tr>
- <td>Created by</td><td id="meta-created_by"></td>
- </tr>
- <tr>
- <td>Creation date</td><td id="meta-created_at"></td>
- </tr>
- <tr>
- <td>Updated by</td><td id="meta-updated_by"></td>
- </tr>
- <tr>
- <td>Update date</td><td id="meta-updated_at"></td>
- </tr>
-  </table>
+ <table class="page-meta left"> 
+ <tr> 
+ <td>Fullname</td><td id="meta-name" class="editable"></td> 
+ </tr> 
+ <tr> 
+ <td>Created by</td><td id="meta-created_by"></td> 
+ </tr> 
+ <tr> 
+ <td>Creation date</td><td id="meta-created_at"></td> 
+ </tr> 
+ <tr> 
+ <td>Updated by</td><td id="meta-updated_by"></td> 
+ </tr> 
+ <tr> 
+ <td>Update date</td><td id="meta-updated_at"></td> 
+ </tr> 
+  </table> 
  
-  <table class="page-meta right">
-  <tr>
-  <td>Parent</td><td id="meta-parent" class="edit-parent editable"></td>
-  </tr>
-  <tr>
-  <td>Revisions</td><td id="meta-revisions"></td>
-  </tr>
-  <tr>
-  <td>Rating</td><td id="meta-rating"></td>
-  </tr>
-  <tr>
-  <td><a href="#" id="show-children-link">Children</a></td><td id="meta-children"></td>
-  </tr>
-  <tr>
-  <td>Comments</td><td id="meta-comments"></td>
-  </tr>
-  </table>
+  <table class="page-meta right"> 
+  <tr> 
+  <td>Parent</td><td id="meta-parent" class="edit-parent editable"></td> 
+  </tr> 
+  <tr> 
+  <td>Revisions</td><td id="meta-revisions"></td> 
+  </tr> 
+  <tr> 
+  <td>Rating</td><td id="meta-rating"></td> 
+  </tr> 
+  <tr> 
+  <td><a href="#" id="show-children-link">Children</a></td><td id="meta-children"></td> 
+  </tr> 
+  <tr> 
+  <td>Comments</td><td id="meta-comments"></td> 
+  </tr> 
+  </table> 
  
-  <table class="page-meta full bottom">
-  <tr>
-  <td><a href="#" id="show-tags-link">Tags</a></td><td id="meta-tags" class="editable"></td>
-  </tr>
-  </table>
+  <table class="page-meta full bottom"> 
+  <tr> 
+  <td><a href="#" id="show-tags-link">Tags</a></td><td id="meta-tags" class="editable"></td> 
+  </tr> 
+  </table> 
  
- <textarea id="meta-content"></textarea>
- </div>
+ <textarea id="meta-content"></textarea> 
+ </div> 
  
-<form id="save-page-form" name="save page" onsubmit="return false;">
-<input type="hidden" name="save-page-title" id="save-page-title" value="" />
-<input type="hidden" name="save-page-parent" id="save-page-parent" value="" />
-<input type="hidden" name="save-page-tags" id="save-page-tags" value="" />
-<input type="hidden" name="save-page-name" id="save-page-name" value="" />
-<input type="hidden" name="save-page-original-name" id="save-page-original-name" value="" />
-</form>
+<form id="save-page-form" name="save page" onsubmit="return false;"> 
+<input type="hidden" name="save-page-title" id="save-page-title" value="" /> 
+<input type="hidden" name="save-page-parent" id="save-page-parent" value="" /> 
+<input type="hidden" name="save-page-tags" id="save-page-tags" value="" /> 
+<input type="hidden" name="save-page-name" id="save-page-name" value="" /> 
+<input type="hidden" name="save-page-original-name" id="save-page-original-name" value="" /> 
+</form> 
  
-</section>
+</section> 
  
-<section id="intro" class="draw wide show">
-<div class="menubar draw">
-<span>Welcome to Edmund</span><a href="#" onclick="hideDraw('intro');">Close</a>
-</div>
+<section id="intro" class="draw wide show"> 
+<div class="menubar draw"> 
+<span>Welcome to Edmund</span><a href="#" onclick="hideDraw('intro');">Close</a> 
+</div> 
  
-<div class="inner scrollable">
+<div class="inner scrollable"> 
  
-<p><strong>First timers:</strong></p>
+<noscript>
+<p><strong>JavaScript is required.</strong></p> 
  
-<p>If this is the first time you've visited Edmund, then you'll need to enter your Wikidot API key and a site to explore in the <a href="#settings">settings panel</a>.</p>
+<p>Edmund depends on JavaScript in order to function properly. Please enable JavaScript in your browser and try again.</p>
+</noscript>
  
-<p><strong>Regulars:</strong></p>
+<p><strong>First timers:</strong></p> 
  
-<p>If you've  visited Edmund before, then your settings should be saved. Click the button below to start exploring.</p>
+<p>If this is the first time you've visited Edmund, then you'll need to enter your Wikidot API key and a site to explore in the <a href="#settings">settings panel</a>.</p> 
  
-<p><a href="#" id="launch-button">Launch App</a></p>
+<p><strong>Regulars:</strong></p> 
  
-<p><strong>Finding your way around</strong></p>
+<p>If you've  visited Edmund before, then your settings should be saved. Click the button below to start exploring.</p> 
  
-<p>The sidebar on the left shows all the categories in your site. Click on a category to show all the pages in that category. Click on a page to load it into the main window.</p>
+<p><a href="#" id="launch-button">Launch App</a></p> 
  
-<p>The main window shows all the meta information attached to the page as well as the content of the page. Fields that change colour when you hover over them can be edited - click to edit their contents, then press enter or the save button to save your changes locally. Once you've edited all that you want to, click the <em>Save Changes</em> button in the top right to export the page to your Wikidot site.</p>
+<p><strong>Finding your way around</strong></p> 
  
-<p>Status messages will appear in the very top right of the page (in the header) - this is where Edmund tells you what he's doing.</p>
+<p>The sidebar on the left shows all the categories in your site. Click on a category to show all the pages in that category. Click on a page to load it into the main window.</p> 
  
-<p><strong>'Open in Edmund' Bookmarlet</strong></p>
+<p>The main window shows all the meta information attached to the page as well as the content of the page. Fields that change colour when you hover over them can be edited - click to edit their contents, then press enter or the save button to save your changes locally. Once you've edited all that you want to, click the <em>Save Changes</em> button in the top right to export the page to your Wikidot site.</p> 
  
-<p>Since version 0.71, Edmund supports importing a page using a bookmarlet. Drag the button below to your bookmarks bar, and when on a Wikidot page, click it to import that page into Edmund. It does not currently support custom domains.</p>
+<p>Status messages will appear in the very top right of the page (in the header) - this is where Edmund tells you what he's doing.</p> 
  
-<p><a href="javascript:domain=WIKIREQUEST.info.domain.match(/^(.*?)\.wikidot\.com$/);if(domain){unix=WIKIREQUEST.info.pageUnixName;window.location='https://css3.wdfiles.com/edmund/code/1#?site='+domain[1]+'&page='+unix}else{alert('Custom domains are not yet supported.');}" class="button">Open in Edmund</a></p>
-</div>
-</section>
-
-<section id="mass-editor" class="draw wide">
-<div class="menubar draw">
-<span>Mass Editor</span>
-</div>
+<p><strong>'Open in Edmund' Bookmarlet</strong></p> 
  
-<div class="inner scrollable">
-
-<p>Select pages from the left to add to the mass editor. Clicking the category title will add all pages from that category.</p>
-
-<div class="mass-pages">
-<ul class="mass-editor-page-list">
-<li><a href="#" class="clear-mass-editor">Clear Mass Editor List</a></li>
-</ul>
-<ul id="mass-editor-pages" class="mass-editor-page-list">
-</ul>
-</div>
-<div id="mass-tabs" class="tab-container">
-<ul class="tabnav">
+<p>Since version 0.71, Edmund supports importing a page using a bookmarlet. Drag the button below to your bookmarks bar, and when on a Wikidot page, click it to import that page into Edmund. It does not currently support custom domains.</p> 
+ 
+<p><a href="javascript:domain=WIKIREQUEST.info.domain.match(/^(.*?)\.wikidot\.com$/);if(domain){unix=WIKIREQUEST.info.pageUnixName;window.location='https://css3.wdfiles.com/edmund/code/1#?site='+domain[1]+'&page='+unix}else{alert('Custom domains are not yet supported.');}" class="button">Open in Edmund</a></p> 
+</div> 
+</section> 
+ 
+<section id="mass-editor" class="draw wide"> 
+<div class="menubar draw"> 
+<span>Mass Editor</span> 
+</div> 
+ 
+<div class="inner scrollable"> 
+ 
+<p>Select pages from the left to add to the mass editor. Clicking the category title will add all pages from that category.</p> 
+ 
+<div class="mass-pages"> 
+<ul class="mass-editor-page-list"> 
+<li><a href="#" class="clear-mass-editor">Clear Mass Editor List</a></li> 
+</ul> 
+<ul id="mass-editor-pages" class="mass-editor-page-list"> 
+</ul> 
+</div> 
+<div id="mass-tabs" class="tab-container"> 
+<ul class="tabnav"> 
 <li><a href="#mass-tags">Tags</a></li>  
 <li><a href="#mass-rename">Rename</a></li>  
 <li><a href="#mass-export">Export</a></li> 
-</ul>
-
-<div id="mass-tags" class="tabdiv">
-<h4>Change Tags</h4>
-<p>Enter a space separated list of tags in the relevant fields below.</p>
-<table>
-<tr>
-<td>Tags to remove:</td><td><input type="text" name="mass-tags-remove" value="" id="mass-tags-remove" class="mass-tags-input" /></td>
+</ul> 
+ 
+<div id="mass-tags" class="tabdiv"> 
+<h4>Change Tags</h4> 
+<p>Enter a space separated list of tags in the relevant fields below.</p> 
+<table> 
+<tr> 
+<td>Tags to remove:</td><td><input type="text" name="mass-tags-remove" value="" id="mass-tags-remove" class="mass-tags-input" /></td> 
+</tr> 
+<tr> 
+<td>Remove all tags:</td><td><input type="checkbox" name="mass-tags-removeAll" id="mass-tags-removeAll"/></td> 
+</tr> 
+<tr> 
+<td>Tags to add:</td><td><input type="text" name="mass-tags-add" value="" id="mass-tags-add" class="mass-tags-input" /></td> 
+</tr> 
+</table> 
+ 
+<input type="button" class="button" name="mass-tags-go" id="mass-tags-submit" value="Change Tags" /> 
+</div> 
+ 
+<div id="mass-rename" class="tabdiv"> 
+<h4>Rename Pages</h4> 
+<p>Choose an option below to begin renaming your pages.</p> 
+<form name="massRenameForm"onsubmit="return false;">
+<table> 
+<tr> 
+<td><input type="radio" name="massRename" id="mass-rename-prepend-radio" data-action="prepend" /></td><td>Prepend</td><td><input type="text" name="mass-rename-prepend" value="" id="mass-rename-prepend" class="mass-rename-input" /></td> 
+</tr> 
+<tr> 
+<td><input type="radio" name="massRename" id="mass-rename-append-radio" data-action="append" /></td><td>Append</td><td><input type="text" name="mass-rename-append" value="" id="mass-rename-append" class="mass-rename-input" /></td> 
+</tr> 
+<tr> 
+<td><input type="radio" name="massRename" id="mass-rename-category-radio" data-action="category" /></td><td>Change category</td><td><input type="text" name="mass-rename-category" value="" id="mass-rename-category" class="mass-rename-input" /></td> 
+</tr> 
+<tr> 
+<td><input type="radio" name="massRename" id="mass-rename-delete-radio" data-action="delete" /></td><td>Delete</td><td><input type="text" name="mass-rename-delete" value="deleted" id="mass-rename-delete" class="mass-rename-input" /></td> 
 </tr>
-<tr>
-<td>Remove all tags:</td><td><input type="checkbox" name="mass-tags-removeAll" id="mass-tags-removeAll"/></td>
-</tr>
-<tr>
-<td>Tags to add:</td><td><input type="text" name="mass-tags-add" value="" id="mass-tags-add" class="mass-tags-input" /></td>
-</tr>
-</table>
-
-
-<input type="button" class="button" name="mass-tags-go" id="mass-tags-submit" value="Change Tags" />
-</div>
-
-<div id="mass-rename" class="tabdiv">
-<h4>Rename Pages</h4>
-<p>This feature is coming soon.</p>
-</div>
-
-<div id="mass-export" class="tabdiv">
-<h4>Export Pages</h4>
-<p>This feature is coming soon.</p>
-</div>
-
-</div>
-
-</div>
-</section>
+</table> 
  
-<section id="page-options" class="draw">
-<div class="menubar draw">
-<span>Page options</span><a href="#" onclick="hideDraw('page-options');">Close</a>
-</div>
-<p><a href="#" id="options-delete" class="button">Delete page</a></p>
-<p><strong>Note:</strong> Deleting a page renames it to the <em>deleted</em> category.</p>
+<input type="button" class="button" name="mass-rename-go" id="mass-rename-submit" value="Rename pages" /> 
+</form>
+</div> 
  
-</section>
+<div id="mass-export" class="tabdiv"> 
+<h4>Export Pages</h4> 
+<p>This feature is coming soon.</p> 
+</div> 
  
-<section id="children" class="draw">
-<div class="menubar draw">
-<span>Children</span><a href="#" onclick="hideDraw('children');">Close</a>
-</div>
+</div> 
  
-<p></p>
+</div> 
+</section> 
  
-<ul id="children-list">
-</ul>
+<section id="page-options" class="draw"> 
+<div class="menubar draw"> 
+<span>Page options</span><a href="#" onclick="hideDraw('page-options');">Close</a> 
+</div> 
+<p><a href="#" id="options-delete" class="button">Delete page</a></p> 
+<p><strong>Note:</strong> Deleting a page renames it to the <em>deleted</em> category.</p> 
  
-</section>
+</section> 
  
-<section id="tags" class="draw">
-<div class="menubar draw">
-<span>Tags</span><a href="#" onclick="hideDraw('tags');">Close</a>
-</div>
+<section id="children" class="draw"> 
+<div class="menubar draw"> 
+<span>Children</span><a href="#" onclick="hideDraw('children');">Close</a> 
+</div> 
  
-<p></p>
+<p></p> 
  
-<ul id="tags-list">
-</ul>
+<ul id="children-list"> 
+</ul> 
  
-</section>
+</section> 
  
-<section id="tagged-pages" class="draw">
-<div class="menubar draw">
-<span>Tagged pages</span><a href="#" onclick="hideDraw('tagged-pages');unNudgeDraw('tags');">Close</a>
-</div>
+<section id="tags" class="draw"> 
+<div class="menubar draw"> 
+<span>Tags</span><a href="#" onclick="hideDraw('tags');">Close</a> 
+</div> 
  
-<p></p>
+<p></p> 
  
-<ul id="tagged-pages-list">
-</ul>
+<ul id="tags-list"> 
+</ul> 
  
-</section>
+</section> 
  
-<section id="about" class="draw">
-<div class="menubar draw">
-<span>About Edmund</span><a href="#" onclick="hideDraw('about');">Close</a>
-</div>
+<section id="tagged-pages" class="draw"> 
+<div class="menubar draw"> 
+<span>Tagged pages</span><a href="#" onclick="hideDraw('tagged-pages');unNudgeDraw('tags');">Close</a> 
+</div> 
  
-<div class="inner scrollable">
+<p></p> 
  
-<p><strong>Edmund</strong> let's you explore your Wikidot site like never before. He's currently in beta, so be careful - you never know when he might throw a tantrum. He especially doesn't like really big sites.</p>
+<ul id="tagged-pages-list"> 
+</ul> 
  
-<p><strong>What's with the name?</strong></p>
-<p>Count Paweł <strong>Edmund</strong> Strzelecki was a Polish explorer who adventured across to Australia in the early 1800s. Among other things, Strzelecki climbed the highest peak, naming it Mount Kosciuszko, after Tadeusz Kościuszko, a national Hero of Poland. He's also in the first result when you search <em>Polish Explorer</em> on Google.</p>
+</section> 
  
-<p><strong>Credits</strong></p>
-<p>Edmund was hand crafted by <a href="http://bmccreative.com">BMC Creative</a>. A big thanks to <strong><a href="http://www.wikidot.com">Wikidot</a></strong> for building this awesome platform, <strong>Piotr Gabryjeluk</strong> for the jQuery API Library and <strong>James Kanjo</strong> for the date parser.</p>
-</div>
-</section>
+<section id="about" class="draw"> 
+<div class="menubar draw"> 
+<span>About Edmund</span><a href="#" onclick="hideDraw('about');">Close</a> 
+</div> 
  
- </div>
+<div class="inner scrollable"> 
+ 
+<p><strong>Edmund</strong> let's you explore your Wikidot site like never before. He's currently in beta, so be careful - you never know when he might throw a tantrum. He especially doesn't like really big sites.</p> 
+ 
+<p><strong>What's with the name?</strong></p> 
+<p>Count Paweł <strong>Edmund</strong> Strzelecki was a Polish explorer who adventured across to Australia in the early 1800s. Among other things, Strzelecki climbed the highest peak, naming it Mount Kosciuszko, after Tadeusz Kościuszko, a national Hero of Poland. He's also in the first result when you search <em>Polish Explorer</em> on Google.</p> 
+ 
+<p><strong>Credits</strong></p> 
+<p>Edmund was hand crafted by <a href="http://bmccreative.com">BMC Creative</a>. A big thanks to <strong><a href="http://www.wikidot.com">Wikidot</a></strong> for building this awesome platform, <strong>Piotr Gabryjeluk</strong> for the jQuery API Library and <strong>James Kanjo</strong> for the date parser.</p> 
+ 
+<p><strong>License</strong></p> 
+<p>This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 3 as 
+    published by the Free Software Foundation.<br> 
+ 
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.<br> 
+ 
+    A copy of the GNU General Public License is available from
+    <a href="http://www.gnu.org/copyleft/gpl.html">http://www.gnu.org/copyleft/gpl.html</a>.</p> 
+</div> 
+</section> 
+ 
+ </div> 
  
  <div id="activity"></div> 
  
- </div>
+ </div> 
  
- <div id="settings">
- <h4>Settings</h4>
- <form name="settings-form" id="settings-form" class="settings-form">
- <label for="settings-site">Site:</label>
- <input type="text" name="settings-site" id="settings-site" value="" />
- <label for="settings-site" class="url-end">.wikidot.com</label><br>
+ <div id="settings"> 
+ <h4>Settings</h4> 
+ <form name="settings-form" id="settings-form" class="settings-form"> 
+ <label for="settings-site">Site:</label> 
+ <input type="text" name="settings-site" id="settings-site" value="" /> 
+ <label for="settings-site" class="url-end">.wikidot.com</label><br> 
  
- <label for="settings-api-key">API Key:</label>
- <input type="text" name="settings-api-key" id="settings-api-key" value="" /><br>
+ <label for="settings-api-key">API Key:</label> 
+ <input type="text" name="settings-api-key" id="settings-api-key" value="" /><br> 
  
- <input type="submit" name="settings-submit" value="Go Explore..." onsubmit="return false;" />
- </form>
- <h4>Options</h4>
- <form class="settings-form" onsubmit="return false;">
- <label for="settings-notifications" class="checkbox-label">Send watching notifcations:</label>
- <input type="checkbox" name="settings-notifications" id="settings-notifications" value="" /><br>
- </form>
- <a href="#" class="settings-close">Close</a>
- </div>
+ <input type="submit" name="settings-submit" value="Go Explore..." onsubmit="return false;" /> 
+ </form> 
+ <h4>Options</h4> 
+ <form class="settings-form" onsubmit="return false;"> 
+ <label for="settings-notifications" class="checkbox-label">Send watching notifcations:</label> 
+ <input type="checkbox" name="settings-notifications" id="settings-notifications" value="" /><br> 
+ </form> 
+ <a href="#" class="settings-close">Close</a> 
+ </div> 
  
-<footer>
-<div class="left">
-Edmund v0.75 beta | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="#settings">Settings</a>
-</div>
-<div class="right">
-Brought to you by <a href="http://bmccreative.com">BMC Creative</a>
-</div>
-
-</footer>
-</body>
+<footer> 
+<div class="left"> 
+Edmund v0.76.2 beta | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="#settings">Settings</a> 
+</div> 
+<div class="right"> 
+Brought to you by <a href="http://bmccreative.com">BMC Creative</a> 
+</div> 
+ 
+</footer> 
+</body> 
 </html>

@@ -33,13 +33,13 @@
  
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script> 
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js"></script> 
-<script type="text/javascript" src="js/jquery.wikidot-api.js"></script> 
+<script type="text/javascript" src="https://jquery-wikidot-api.wdfiles.com/local--code/code:jquery-wikidot-api/1"></script> 
 <script type="text/javascript" src="https://bmcenterprises.wdfiles.com/local--files/images/jquery.jeditable.min.js"></script> 
 <script type="text/javascript" src="https://css3.wdfiles.com/local--code/admin:tipsy-js"></script> 
 <script type="text/javascript" src="https://css3.wdfiles.com/local--files/files/jquery.alerts.js"></script> 
 <script type="text/javascript" src="https://css3.wdfiles.com/local--code/admin:friendly-date/1"></script> 
  
-<link rel="stylesheet" href="https://css3.wdfiles.com/local--code/admin:explorer-css/1" type="text/css" /> 
+<link rel="stylesheet" href="https://css3.wdfiles.com/local--code/admin:explorer-css/1" type="text/css" />
  
 <script type="text/javascript"> 
  
@@ -92,10 +92,11 @@ function show_modal(id) {
 	$('#' + id).addClass('show').draggable({ containment: 'window', handle: 'h4:first' });
 	$('#overlay').addClass('show').css({height: $(document).height()});
 }
- 
- 
+
 //Close settings window (called on click of submit button)  
 function close_settings() {
+	$('.modal').removeClass('show');
+	$('#overlay').removeClass('show').css({height: '0'});;
 	var settingsSite = $('#settings-site').val();
     window.location.hash = '#';
 }
@@ -898,7 +899,16 @@ function mass_changeTags(index) {
  
                    $.merge(massTags_existing, massTags_add); //Merge existing tags (- removed tags) with tags to add
  
-               wd.pages.save_one({'site': wdSite, 'page': thisPage, 'tags': massTags_existing}, function(data) {mass_changeTags(index + 1);});
+               wd.pages.save_one({'site': wdSite, 'page': thisPage, 'tags': massTags_existing}, function(data) {
+               
+               	if(data) {
+               mass_changeTags(index + 1);
+               }
+               else {
+				loading.html('Error tagging pages.').delay(3000).fadeOut(200);
+				}
+				
+				});
  
                }); 
         }
@@ -976,7 +986,16 @@ function mass_rename(index) {
                    var newPage = $('#mass-rename-delete').val() + thisPage;
                }
  
-               wd.pages.save_one({'site': wdSite, 'page': thisPage, 'rename_as': newPage}, function(data) {mass_rename(index + 1);});
+               wd.pages.save_one({'site': wdSite, 'page': thisPage, 'rename_as': newPage}, function(data) {
+               
+               if(data) {
+               	mass_rename(index + 1);
+               }
+	 		   else {
+	 			loading.html('Error renaming page.').delay(3000).fadeOut(200);
+	 		   }
+               
+               });
  
         }
         else {

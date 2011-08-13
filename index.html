@@ -87,13 +87,22 @@ $('section.draw.nudge').live('click', function() {
     console.log('nudge draw clicked');
  
 });
+
+function show_modal(id) {
+	$('#' + id).addClass('show').draggable({ containment: 'window', handle: 'h4:first' });
+	$('#overlay').addClass('show').css({height: $(document).height()});
+}
+ 
  
 //Close settings window (called on click of submit button)  
 function close_settings() {
-           var settingsSite = $('#settings-site').val();
-           window.location.hash = '#';
+	var settingsSite = $('#settings-site').val();
+    window.location.hash = '#';
 }
- 
+function close_modal() {
+	$('.modal').removeClass('show');
+	$('#overlay').removeClass('show').css({height: '0'});;
+}	 
 //Allow for parameters to passed via the URL
 function url_param(name) {
   name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
@@ -106,6 +115,16 @@ function url_param(name) {
    else {
     return results[1];
     }
+}
+
+//Google Analytics event tracking
+function ga_trackEvent(category, action, label) { //Event tracking - not currently enabled
+/*
+    if (setting_analytics == 'true') {
+    _gaq.push(['_trackEvent', category, action, label]);
+    console.log('Event tracked: ' + category + ':' + action + ':' + label);
+    }
+*/
 }
  
 $(document).ready(function() {
@@ -137,29 +156,46 @@ $('#settings-site').val(localStorage.getItem('wikidot_site')).change(function() 
 update_site();
  
 //Check notifications checkbox
-var update_notifications = function() {
-    window.saveNotifications = localStorage.getItem('wikidot_notifications');
-    if (saveNotifications === 'true') {
+var update_settings = function() {
+    window.setting_notifications = localStorage.getItem('wikidot_notifications');
+    window.setting_analytics = localStorage.getItem('edmund_analytics');
+    if (setting_notifications == 'true') {
      $('#notify-notifications').addClass('show').tipsy({gravity: 'ne', fade: true}); //Show email icon
-     $('#settings-notifications').each(function(){ this.checked = true; }); //Check the checkbox
+     $('#settings-notifications').attr('checked', true); //Check the checkbox
     }
     else { 
     $('#notify-notifications').removeClass('show');
     }
+    
+    if (setting_analytics == 'true') {
+     $('#settings-analytics').attr('checked', true); //Check the checkbox
+    }
 };
+update_settings();
  
 $('#settings-notifications').click(function() {
     if ($('#settings-notifications').is(':checked')) {
             console.log('Yes, send notifications.');
-            localStorage.setItem('wikidot_notifications', 'true'); 
+            localStorage.setItem('wikidot_notifications', true); 
         }
     else {
-            console.log('No, dont send notifications.');
-            localStorage.setItem('wikidot_notifications', 'false'); 
+            console.log('No, don\'t send notifications.');
+            localStorage.setItem('wikidot_notifications', false); 
         }
-    update_notifications();
+    update_settings();
 });
-update_notifications();
+
+$('#settings-analytics').click(function() {
+    if ($('#settings-analytics').is(':checked')) {
+            console.log('Yes, allow analytics.');
+            localStorage.setItem('edmund_analytics', true); 
+        }
+    else {
+            console.log('No, don\'t allow analytics');
+            localStorage.setItem('edmund_analytics', false);  
+        }
+    update_settings();
+});
  
 //Loading Message
 var loading = $('#loading');
@@ -238,7 +274,7 @@ var getPageList = function(category) {
         $('#page-list').html('');
         $('#info-page-count').html('');
         wd.pages.select({'site' : wdSite, 'categories' : [category]}, function(data) {
- 
+        
             var totalPages = data.length;
  
             if(data) {
@@ -497,9 +533,10 @@ var savePage = function() {
                      var saveParent = $('#save-page-parent').val();
                      }
  
-       wd.pages.save_one({'site': wdSite, 'page': pageName, 'title': saveTitle, 'tags' : saveTags, 'parent_fullname' : saveParent, 'content' : saveContent, 'rename_as' : saveName, 'revision_comment' : 'Edited with Edmund - Wikidot Explorer.', 'notify_watchers' : saveNotifications}, function(data) {
+       wd.pages.save_one({'site': wdSite, 'page': pageName, 'title': saveTitle, 'tags' : saveTags, 'parent_fullname' : saveParent, 'content' : saveContent, 'rename_as' : saveName, 'revision_comment' : 'Edited with Edmund - Wikidot Explorer.', 'notify_watchers' : setting_notifications}, function(data) {
         if(data) {
         loading.html('Page was saved successfully.').delay(3000).fadeOut(200);
+        ga_trackEvent('Editor','Export','Successful');
  
         //Load new page into editor
  
@@ -549,6 +586,7 @@ var savePage = function() {
         }
         else {
         loading.html('Error saving page.').delay(3000).fadeOut(200);
+        ga_trackEvent('Editor','Export','Error');
          }
        });
    };
@@ -579,9 +617,10 @@ var deletePage = function() {
                      var saveParent = $('#save-page-parent').val();
                      }
  
-       wd.pages.save_one({'site': wdSite, 'page': pageName, 'title': saveTitle, 'tags' : saveTags, 'parent_fullname' : saveParent, 'content' : saveContent, 'rename_as' : 'deleted:' + saveName, 'revision_comment' : 'Edited with Edmund - Wikidot Explorer.', 'notify_watchers' : saveNotifications}, function(data) {
+       wd.pages.save_one({'site': wdSite, 'page': pageName, 'title': saveTitle, 'tags' : saveTags, 'parent_fullname' : saveParent, 'content' : saveContent, 'rename_as' : 'deleted:' + saveName, 'revision_comment' : 'Edited with Edmund - Wikidot Explorer.', 'notify_watchers' : setting_notifications}, function(data) {
         if(data) {
         loading.html('Page was successfully renamed.').delay(3000).fadeOut(200);
+        ga_trackEvent('Editor','Delete','Successful');
  
         //Load new page into editor
  
@@ -633,6 +672,7 @@ var deletePage = function() {
         }
         else {
         loading.html('Error renaming page.').delay(3000).fadeOut(200);
+        ga_trackEvent('Editor','Delete','Error');
          }
        });
    };
@@ -692,10 +732,14 @@ $('#launch-button').live('click', function() {
        hideDraw('intro');
        $('#sidebar').removeClass('disabled');
        var notify = localStorage.getItem('wikidot_notifications');
-       if (notify == null) {
-       		localStorage.setItem('wikidot_notifications', 'false');
+       if (notify === null) {
+               localStorage.setItem('wikidot_notifications', false);
        }
-       update_notifications();
+       var analytics = localStorage.getItem('edmund_analytics');
+       if (analytics === null) {
+               localStorage.setItem('edmund_analytics', false);
+       }       
+       update_settings();
 });
  
 //When settings form is submitted, hide draws, close settings window & load category list
@@ -862,6 +906,7 @@ function mass_changeTags(index) {
         else {
         loading.html('Pages have been tagged.').delay(3000).fadeOut(200);
         $('#mass-tags-submit').removeClass('disabled');
+        ga_trackEvent('Mass Editor','Change Tags','Successful');
         }
  
  }
@@ -869,7 +914,7 @@ function mass_changeTags(index) {
  
 $('#mass-tags-submit').click(function() {
       jConfirm('This will edit the tags on all of the pages you have selected. Are you sure you want to continue?', 'Please confirm', function(r) {
-          if(r == true) {
+          if(r === true) {
               mass_changeTags(0);
               $('#mass-tags-submit').addClass('disabled');
           }
@@ -894,9 +939,63 @@ $('.mass-rename-input').attr('disabled', true);
 $(document.massRenameForm.massRename).click(function() {
         if ($(this).is(':checked')) {
         		$('.mass-rename-input').attr('disabled', true);
-                $('#mass-rename-' + $(this).attr('data-action')).removeAttr('disabled');
+                $('#mass-rename-' + $(this).val()).removeAttr('disabled').focus();
             } 
  });
+ 
+function mass_rename(index) {
+    var thisPage = massEditorPagesArray[index];
+    var totalPagesToRename = massEditorPagesArray.length;
+    var thisPageNumber = index + 1;
+ 
+    if(massEditorPagesArray.length === 0) {
+        jAlert('Hmm, you haven\'t selected any pages yet. Select pages to rename using the list on the left.', 'No pages selected', function(r) {
+            $('#mass-rename-submit').removeClass('disabled');
+        });
+ 
+    }
+    else {
+ 
+        if(thisPage) {  
+ 
+                loadingMessage('Renaming page: ' + thisPage + ' (' + thisPageNumber + '/' + totalPagesToRename + ')');
+                 
+               if ($('#mass-rename-prepend-radio').is(':checked')) {
+                   var newPage = $('#mass-rename-prepend').val() + thisPage;
+               }
+               else if ($('#mass-rename-append-radio').is(':checked')) {
+                   var newPage = thisPage + $('#mass-rename-append').val();
+               }
+               else if ($('#mass-rename-category-radio').is(':checked')) {
+                   var pageNameSplit = thisPage.replace(':', ':::edmund-splitter:::');
+                   var pageNameArray = pageNameSplit.split(':::edmund-splitter:::');
+                   
+                   var newPage = $('#mass-rename-category').val() + ':' + pageNameArray[1];
+               }
+               else if ($('#mass-rename-delete-radio').is(':checked')) {
+                   var newPage = $('#mass-rename-delete').val() + thisPage;
+               }
+ 
+               wd.pages.save_one({'site': wdSite, 'page': thisPage, 'rename_as': newPage}, function(data) {mass_rename(index + 1);});
+ 
+        }
+        else {
+        loading.html('Pages have been renamed.').delay(3000).fadeOut(200);
+        $('#mass-rename-submit').removeClass('disabled');
+        ga_trackEvent('Mass Editor','Rename','Successful');
+        }
+ 
+ }
+}
+ 
+$('#mass-rename-submit').click(function() {
+      jConfirm('This will rename all of the pages you have selected. Are you sure you want to continue?', 'Please confirm', function(r) {
+          if(r === true) {
+              mass_rename(0);
+              $('#mass-rename-submit').addClass('disabled');
+          }
+      });    
+});
  
 }); 
 </script> 
@@ -905,6 +1004,7 @@ $(document.massRenameForm.massRename).click(function() {
 <script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-25082132-1']);
+  _gaq.push(['_gat._anonymizeIp']);
   _gaq.push(['_trackPageview']);
   (function() {
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
@@ -925,7 +1025,7 @@ $(document.massRenameForm.massRename).click(function() {
 <div id="content"> 
  
 <div id="sidebar" class="disabled"> 
-<div class="menubar side"><a href="#settings">Settings</a></div> 
+<div class="menubar side"><a href="javascript:;" onclick="show_modal('settings');">Settings</a></div> 
  
  <form onsubmit="return false;" class="switch-form"> 
  <label for="mass-editor-toggle" class="switch-label"> 
@@ -1043,7 +1143,7 @@ $(document.massRenameForm.massRename).click(function() {
  
 <p><strong>First timers:</strong></p> 
  
-<p>If this is the first time you've visited Edmund, then you'll need to enter your Wikidot API key and a site to explore in the <a href="#settings">settings panel</a>.</p> 
+<p>If this is the first time you've visited Edmund, then you'll need to enter your Wikidot API key and a site to explore in the <a href="javascript:;" onclick="show_modal('settings');">settings panel</a>.</p> 
  
 <p><strong>Regulars:</strong></p> 
  
@@ -1098,10 +1198,10 @@ $(document.massRenameForm.massRename).click(function() {
 <td>Tags to remove:</td><td><input type="text" name="mass-tags-remove" value="" id="mass-tags-remove" class="mass-tags-input" /></td> 
 </tr> 
 <tr> 
-<td>Remove all tags:</td><td><input type="checkbox" name="mass-tags-removeAll" id="mass-tags-removeAll"/></td> 
+<td>Tags to add:</td><td><input type="text" name="mass-tags-add" value="" id="mass-tags-add" class="mass-tags-input" /></td> 
 </tr> 
 <tr> 
-<td>Tags to add:</td><td><input type="text" name="mass-tags-add" value="" id="mass-tags-add" class="mass-tags-input" /></td> 
+<td>Remove all tags:</td><td><input type="checkbox" name="mass-tags-removeAll" id="mass-tags-removeAll"/></td> 
 </tr> 
 </table> 
  
@@ -1114,16 +1214,16 @@ $(document.massRenameForm.massRename).click(function() {
 <form name="massRenameForm"onsubmit="return false;">
 <table> 
 <tr> 
-<td><input type="radio" name="massRename" id="mass-rename-prepend-radio" data-action="prepend" /></td><td>Prepend</td><td><input type="text" name="mass-rename-prepend" value="" id="mass-rename-prepend" class="mass-rename-input" /></td> 
+<td><input type="radio" name="massRename" id="mass-rename-prepend-radio" value="prepend" /></td><td>Prepend</td><td><input type="text" name="mass-rename-prepend" value="" id="mass-rename-prepend" class="mass-rename-input" /></td> 
 </tr> 
 <tr> 
-<td><input type="radio" name="massRename" id="mass-rename-append-radio" data-action="append" /></td><td>Append</td><td><input type="text" name="mass-rename-append" value="" id="mass-rename-append" class="mass-rename-input" /></td> 
+<td><input type="radio" name="massRename" id="mass-rename-append-radio" value="append" /></td><td>Append</td><td><input type="text" name="mass-rename-append" value="" id="mass-rename-append" class="mass-rename-input" /></td> 
 </tr> 
 <tr> 
-<td><input type="radio" name="massRename" id="mass-rename-category-radio" data-action="category" /></td><td>Change category</td><td><input type="text" name="mass-rename-category" value="" id="mass-rename-category" class="mass-rename-input" /></td> 
+<td><input type="radio" name="massRename" id="mass-rename-category-radio" value="category" /></td><td>Change category</td><td><input type="text" name="mass-rename-category" value="" id="mass-rename-category" class="mass-rename-input" /></td> 
 </tr> 
 <tr> 
-<td><input type="radio" name="massRename" id="mass-rename-delete-radio" data-action="delete" /></td><td>Delete</td><td><input type="text" name="mass-rename-delete" value="deleted" id="mass-rename-delete" class="mass-rename-input" /></td> 
+<td><input type="radio" name="massRename" id="mass-rename-delete-radio" value="delete" /></td><td>Delete</td><td><input type="text" name="mass-rename-delete" value="deleted:" id="mass-rename-delete" class="mass-rename-input" /></td> 
 </tr>
 </table> 
  
@@ -1222,8 +1322,10 @@ $(document.massRenameForm.massRename).click(function() {
  
  </div> 
  
- <div id="settings"> 
- <h4>Settings</h4> 
+ <div id="settings" class="modal"> 
+ <div class="modal-inner">
+ <h4>Wikidot Settings</h4> 
+  <a href="#" class="modal-close" onclick="close_modal();">Close</a>
  <form name="settings-form" id="settings-form" class="settings-form"> 
  <label for="settings-site">Site:</label> 
  <input type="text" name="settings-site" id="settings-site" value="" /> 
@@ -1234,22 +1336,29 @@ $(document.massRenameForm.massRename).click(function() {
  
  <input type="submit" name="settings-submit" value="Go Explore..." onsubmit="return false;" /> 
  </form> 
- <h4>Options</h4> 
+ <h4>Edmund Options</h4> 
  <form class="settings-form" onsubmit="return false;"> 
- <label for="settings-notifications" class="checkbox-label">Send watching notifcations:</label> 
- <input type="checkbox" name="settings-notifications" id="settings-notifications" value="" /><br> 
- </form> 
- <a href="#" class="settings-close">Close</a> 
+ <span	class="settings-group-label">Export:</span><input type="checkbox" name="settings-notifications" id="settings-notifications" value="" />
+ <label for="settings-notifications" class="checkbox-label">Send watching notifcations</label> <br> 
+ 
+ <!-- Event tracking - not currently enabled. 
+ <span	class="settings-group-label">Statistics:</span><input type="checkbox" name="settings-analytics" id="settings-analytics" value="" />
+ <label for="settings-analytics" class="checkbox-label">Allow anonymous usage analytics</label><br> 
+ -->
+ </form>  
+ </div>
  </div> 
  
 <footer> 
 <div class="left"> 
-Edmund v0.76.2 beta | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="#settings">Settings</a> 
+Edmund v0.8 beta | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="javascript:;" onClick="show_modal('settings');">Settings</a> 
 </div> 
 <div class="right"> 
 Brought to you by <a href="http://bmccreative.com">BMC Creative</a> 
 </div> 
  
 </footer> 
+
+<div id="overlay"></div>
 </body> 
 </html>

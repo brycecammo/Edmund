@@ -291,6 +291,8 @@ a.menubar-back {
 	background: url(https://css3.wdfiles.com/local--files/edmund/back-arrow.png) no-repeat 50% 50%;
 	opacity: 0.7;
 	-webkit-transition: opacity 200ms linear;
+	-moz-transition: opacity 200ms linear;
+	transition: opacity 200ms linear;
 }
 a.menubar-back:hover {
 	opacity: 1;
@@ -305,26 +307,38 @@ a.menubar-back:hover {
 .sidebar-list-container {
 	width: 221px;
 	position: relative;
-	-webkit-transition: left 400ms ease-out;
-	-moz-transition: left 400ms ease-out;
-	transition: left 400ms ease-out;
+	-webkit-transition: -webkit-transform 400ms ease-out;
+	-moz-transition: -moz-transform 400ms ease-out;
+	-o-transition: 	-o-transform 400ms ease-out;
+	transition: transform 400ms ease-out;
 }
 div.sidebar-list-container {
 	height: 25px;
 	padding: 0 10px;
 	-webkit-transition-delay:75ms;
 	-moz-transition-delay:75ms;
+	-o-transition-delay: 75ms;
 	transition-delay:75ms;
 }
-.sidebar-list-container.left.current,
-.sidebar-list-container.right.current {
-	left: 0;
+.sidebar-list-container.left.current, .sidebar-list-container.right.current {
+	-webkit-transform: translate3d(0,0,0);
+	-moz-transform: translate(0,0);
+	-o-transform: translate(0,0);
+	transform: translate(0,0);
 }
+
 .sidebar-list-container.left {
-	left: -221px;
+	-webkit-transform: translate3d(-221px,0,0);
+   	-moz-transform: translate(-221px,0);
+	-o-transform: translate(-221px,0);
+	transform: translate(-221px,0);
 }
+
 .sidebar-list-container.right {
-	left: 221px;
+	-webkit-transform: translate3d(221px,0,0);
+   	-moz-transform: translate(221px,0);
+	-o-transform: translate(221px,0);
+	transform: translate(221px,0);
 }
 #sidebar {
 	overflow: hidden;
@@ -447,7 +461,7 @@ td.editable:hover {
 }
 #meta-content {
 	display: block;
-	min-height: 82px;
+	min-height: 175px;
 	padding: 5px 15px;
 	margin: 10px 20px;
 	width: 608px;
@@ -455,7 +469,6 @@ td.editable:hover {
 	border: 1px solid #ccc;
 	font-family: Monaco;
 	font-size: 11px;
-	min-height: 100px;
 	resize: vertical;
 	overflow-y: auto;
 }
@@ -540,7 +553,7 @@ td.editable:hover {
 section.draw {
 	position: absolute;
 	top: -1px;
-	right: -242px;
+	right: 0;
 	width: 220px;
 	bottom: -1px;
 	background-color: #f8fafb;
@@ -551,30 +564,46 @@ section.draw {
 	-webkit-box-shadow: 0 0 2px rgba(0,0,0,0.3);
 	-moz-box-shadow: 0 0 2px rgba(0,0,0,0.3);
 	box-shadow: 0 0 2px rgba(0,0,0,0.3);
-	-webkit-transition: right 550ms ease-out;
-	-moz-transition: right 550ms ease-out;
-	transition: right 550ms ease-out;
+	-webkit-transition: -webkit-transform 550ms ease-out;
+	-moz-transition: -moz-transform 550ms ease-out;
+	-o-transition: -o-transform 550ms ease-out;
+	transition: transform 550ms ease-out;
 	-webkit-background-clip: padding-box;
 	background-clip: padding-box;
+	-webkit-transform: translate3d(242px,0,0);
+	-moz-transform: translate(242px,0);
+	-o-transform: translate(242px,0);
+	transform: translate(242px,0);
 }
 .draw.wide {
-	right: -742px;
 	width: 738px;
+	-webkit-transform: translate3d(742px,0,0);
+	-moz-transform: translate(742px,0);
+	-o-transform: translate(742px,0);
+	transform: translate(742px,0);
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
 	box-shadow: none;
 }
 .draw.show {
-	right: -1px;
-	-webkit-transition: right 500ms ease-out;
-	-moz-transition: right 500ms ease-out;
-	transition: right 500ms ease-out;
+	-webkit-transform: translate3d(1px,0,0);
+	-moz-transform: translate(1px,0);
+	-o-transform: translate(1px,0);
+	transform: translate(1px,0);
+	-webkit-transition: -webkit-transform 500ms ease-out;
+	-moz-transition: -moz-transform 500ms ease-out;
+	-o-transition: -o-transform 500ms ease-out;
+	transition: transform 500ms ease-out;
 }
 .draw.show.nudge {
-	right: 29px;
-	-webkit-transition: right 280ms ease-out 100ms;
-	-moz-transition: right 280ms ease-out 100ms;
-	transition: right 280ms ease-out 100ms;
+	-webkit-transform: translate3d(-29px,0,0);
+	-moz-transform: translate(-29px,0);
+	-o-transform: translate(-29px,0);
+	transform: translate(-29px,0);
+	-webkit-transition: -webkit-transform 280ms ease-out 100ms;
+	-moz-transition: -moz-transform 280ms ease-out 100ms;
+	-o-transition: -o-transform 280ms ease-out 100ms;
+	transition: transform 280ms ease-out 100ms;
 }
 .draw.nudge a {
 	pointer-events: none;
@@ -635,6 +664,8 @@ section.draw {
 	overflow-y: auto;
 	border-top: 1px solid #eaeef1;
 	-webkit-box-shadow: 0 1px 2px #fff inset;
+	-moz-box-shadow: 0 1px 2px #fff inset;
+	box-shadow: 0 1px 2px #fff inset;
 }
 #tags li {
 	display: inline-block;
@@ -683,85 +714,115 @@ section.draw {
 }
 
 /* Settings */
-#settings {
+.modal {
 	position: absolute;
-	top: -200px;
+	z-index: 10000;
 	opacity: 0;
+	visibility: hidden;
 	width: 400px;
-	padding: 10px;
+	padding: 8px;
 	left: 50%;
+	top: 50%;
+	margin-top: -140px;
 	margin-left: -210px;
-	color: #c2c8cc;
-	text-shadow: 0 1px 1px #111;
-	border: 1px solid #1a1a1a;
-	background: rgba(26, 33, 38, 0.95);
-	background: -moz-linear-gradient(90deg, rgba(26, 33, 38, 0.95) 0%, rgba(34, 42, 47, 0.95) 100%);
-	background: -webkit-gradient(linear, left bottom, left top, from(rgba(26, 33, 38, 0.95)), to(rgba(34, 42, 47, 0.95)));
-	background: -o-linear-gradient(90deg, rgba(26, 33, 38, 0.95) 0%, rgba(34, 42, 47, 0.95) 100%);
-	background: linear-gradient(90deg, rgba(26, 33, 38, 0.95) 0%, rgba(34, 42, 47, 0.95) 100%);
-	-webkit-border-radius: 0 0 6px 6px;
-	-moz-border-radius: 0 0 6px 6px;
-	border-radius: 0 0 6px 6px;
-	-webkit-box-shadow: 
-		inset 0 -1px 0 rgba(255,255,255,0.1),
-		inset 1px 0 0 rgba(255,255,255,0.1),
-		inset -1px 0 0 rgba(255,255,255,0.1),
-		0 1px 3px rgba(0,0,0,0.4);
-	-moz-box-shadow: 
-		inset 0 -1px 0 rgba(255,255,255,0.1),
-		inset 1px 0 0 rgba(255,255,255,0.1),
-		inset -1px 0 0 rgba(255,255,255,0.1),
-		0 1px 3px rgba(0,0,0,0.4);
-	box-shadow: 
-		inset 0 -1px 0 rgba(255,255,255,0.1),
-		inset 1px 0 0 rgba(255,255,255,0.1),
-		inset -1px 0 0 rgba(255,255,255,0.1),
-		0 1px 3px rgba(0,0,0,0.4);
-	-webkit-transition: top 500ms ease-out, opacity 300ms ease;
-	-moz-transition: top 500ms ease-out, opacity 300ms ease;
-	transition: top 500ms ease-out, opacity 300ms ease;
+	color: #333;
+	background: rgba(26, 33, 38, 0.85);
+	background: -moz-linear-gradient(90deg, rgba(26, 33, 38, 0.85) 0%, rgba(34, 42, 47, 0.85) 100%);
+	background: -webkit-gradient(linear, left bottom, left top, from(rgba(26, 33, 38, 0.85)), to(rgba(34, 42, 47, 0.85)));
+	background: -o-linear-gradient(90deg, rgba(26, 33, 38, 0.85) 0%, rgba(34, 42, 47, 0.85) 100%);
+	background: linear-gradient(90deg, rgba(26, 33, 38, 0.85) 0%, rgba(34, 42, 47, 0.85) 100%);
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	box-shadow: 0 0px 5px rgba(0,0,0,0.5);
+	-webkit-transition: opacity 300ms ease-in;
+	-moz-transition: opacity 300ms ease-in;
+	transition: opacity 300ms ease-in;	
 }
-#settings:target {
-	top: 40px;
+.modal.show {
 	opacity: 1;
+	visibility: visible;	
 }
-#settings h4 {
-	position: relative;
-	top: 10px;
-	left: 27px;
+.modal-inner {
+	height: 260px;
+	-webkit-border-radius: 4px;
+	background-color: #f4f4f4;
+	border-top: 1px solid #fff;
+	padding: 0 0 10px;
+	-webkit-box-shadow: 0 0 4px rgba(0,0,0,0.6);
+	-moz-box-shadow: 0 0 4px rgba(0,0,0,0.6);
+	box-shadow: 0 0 4px rgba(0,0,0,0.6);
 }
+.modal h4 {
+	margin: 0 0 5px;
+	padding: 10px 20px 5px;
+	border-bottom: 1px solid #ddd;
+	-webkit-box-shadow: 0 1px 0 #fafafa;
+	-moz-box-shadow: 0 1px 0 #fafafa;
+	box-shadow: 0 1px 0 #fafafa;
+}
+.modal h4:nth-of-type(1) {cursor: move;}
 .settings-form {
 	width: 350px;
-	margin: 0 auto;
+	margin: 0 auto 10px;
 }
 #settings label {
 	display: inline-block;
 	width: 60px;
 	text-align: right;
-	color: #ccc;
 }
 #settings .checkbox-label {
-	width: 170px;
+	width: 250px;
+	margin: 5px 0;
+	text-align: left;
 }
-.settings-close {
+.settings-group-label {
+	width: 60px;
+	text-align: right;
+	padding-right: 5px;
+	display: inline-block;
+}
+.modal-close {
 	position: absolute;
-	right: 10px;
-	bottom: 5px;
-	color: #aaa;
+	top: 18px;
+	right: 17px;
+	color: transparent;
+	display: block;
+	width: 20px;
+	height: 20px;
+	font-size: 0;
+	text-indent: -9999px;
+	line-height: 0;
+	background:  url('file:///Users/brycecameron/Documents/BMC/Development/Edmund%20App/css/close.png') no-repeat 50% 50%;
+	opacity: 0.3;
+	-webkit-transition: opacity 150ms ease;
+	-moz-transition: opacity 150ms ease;
+	transition: opacity 150ms ease;
 }
-#settings input[type="text"] {
+.modal-close:hover {
+	opacity: 0.5;
+}
+.modal input[type="text"] {
 	margin: 5px 0;
 	padding: 4px 5px;
-	color: #fff;
+	color: #222;
 	border: none;
-	border-bottom: 1px solid #171e22;
-	background-color: #1b2125;
+	background-color: #e3e3e3;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
-	-webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.35), 0 1px 0 #383e42;
-	-moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.35), 0 1px 0 #383e42;
-	box-shadow: inset 0 1px 2px rgba(0,0,0,0.35), 0 1px 0 #383e42;
+	-webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.35), 0 1px 0 #ccc, 0 2px 0 #fff;
+	-moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.35), 0 1px 0 #ccc, 0 2px 0 #fff;
+	box-shadow: inset 0 1px 2px rgba(0,0,0,0.35), 0 1px 0 #ccc, 0 2px 0 #fff;
+	-webkit-transition: background 400ms ease;
+	-moz-transition: background 400ms ease;
+	transition: background 400ms ease;
+}
+.modal input[type="text"]:focus {
+	background: #fff;
+	border: inherit;
 }
 #settings-api-key {
 	width: 242px;
@@ -769,8 +830,60 @@ section.draw {
 #settings-site {
 	text-align: right;
 }
-#settings input[type="submit"] {
-	margin: 10px 0 0 64px;
+.modal input[type="submit"] {
+	display: inline-block;
+	    font-weight: bold;
+	    font-size: 12px;
+	    height: 30px;
+	    line-height: 30px;
+	    border: 1px solid #9F9F9F;
+	    margin: 10px auto 0 64px;
+	    padding: 0 15px;
+	    color: #555 !important;
+	    background-color: #e9e9e9;
+	    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f6f6), to(#e4e4e4));
+	    background-image: -moz-linear-gradient(top, #f6f6f6, #e4e4e4);
+	    background-image: -o-linear-gradient(top, #f6f6f6, #e4e4e4);
+	    background-image: linear-gradient(top, #f6f6f6, #e4e4e4);
+	    -webkit-border-radius: 4px;
+	    -moz-border-radius: 4px;
+	    border-radius: 4px;
+	    -webkit-box-shadow: 
+	        0 1px 0 #fefefe inset,
+	        0 -1px 0 #f1f1f1 inset,
+	        0 1px 1px #ddd;
+	    -moz-box-shadow: 
+	         0 1px 0 #fefefe inset,
+	         0 -1px 0 #f1f1f1 inset,
+	         0 1px 1px #ddd;
+	    box-shadow: 
+	         0 1px 0 #fefefe inset,
+	         0 -1px 0 #f1f1f1 inset,
+	         0 1px 1px #ddd;
+	    -webkit-background-clip: padding-box;
+	    background-clip: padding-box;
+}
+.modal input[type="submit"]:hover {
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#e4e4e4));
+	    background-image: -moz-linear-gradient(top, #fff, #e4e4e4);
+	    background-image: -o-linear-gradient(top, #fff, #e4e4e4);
+	    background-image: linear-gradient(top, #fff, #e4e4e4); 
+	    color: #444 !important;   
+}
+.modal input[type="submit"]:active {
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eaeaea), to(#f4f4f4));
+	   background-image: -moz-linear-gradient(top, #eaeaea, #f4f4f4);
+	   background-image: -o-linear-gradient(top, #eaeaea, #f4f4f4);
+	   background-image: linear-gradient(top, #eaeaea, #f4f4f4); 
+	   -webkit-box-shadow: 
+	       inset 0 1px 3px #ccc,
+	       0 1px 0 #fefefe;
+	   -moz-box-shadow: 
+	       inset 0 1px 3px #ccc,
+	       0 1px 0 #fefefe;
+	   box-shadow: 
+	       inset 0 1px 3px #ccc,
+	       0 1px 0 #fefefe;;   
 }
 
 /* Input Fields */
@@ -1138,6 +1251,14 @@ a.clear-mass-editor:after {
 .tabdiv table input[type="checkbox"] {
 	margin-left: 6px;
 }
+
+#mass-rename table td:first-child {
+	width: 30px;
+	text-align: center;
+}
+#mass-rename table td:nth-child(2) {
+	width: 110px;
+}
   
 .ui-tabs-hide {  
 display: none;  
@@ -1238,4 +1359,17 @@ display: none;
 	opacity: 0.25 !important;
 }
 
+#overlay {
+	position: absolute;
+	z-index: 9999;
+	top: 0;
+	left: 0;
+	width: 100%;
+	background-color: #000;
+	opacity: 0;
+	-webkit-transition: opacity 300ms ease-in-out;
+}
+#overlay.show {
+	opacity: 0.25;
+}
 

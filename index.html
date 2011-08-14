@@ -89,7 +89,7 @@ $('section.draw.nudge').live('click', function() {
 });
 
 function show_modal(id) {
-	$('#' + id).addClass('show').draggable({ containment: 'window', handle: 'h4:first' }).css({marginTop: $(this).height()/-4});
+	$('#' + id).addClass('show').draggable({ containment: 'window', handle: 'h4:first' }).css({marginTop: $(this).height()/-4, marginLeft: $(this).height()/-4});
 	$('#overlay').addClass('show').css({height: $(document).height()});
 }
 
@@ -169,6 +169,7 @@ update_site();
 var update_settings = function() {
     window.setting_notifications = localStorage.getItem('wikidot_notifications');
     window.setting_analytics = localStorage.getItem('edmund_analytics');
+    window.setting_startup = localStorage.getItem('edmund_startup');
     if (setting_notifications == 'true') {
      $('#notify-notifications').addClass('show').tipsy({gravity: 'ne', fade: true}); //Show email icon
      $('#settings-notifications').attr('checked', true); //Check the checkbox
@@ -180,8 +181,10 @@ var update_settings = function() {
     if (setting_analytics == 'true') {
      $('#settings-analytics').attr('checked', true); //Check the checkbox
     }
+    if (setting_startup == 'true') {
+     $('#settings-startup').attr('checked', true); //Check the checkbox
+    }
 };
-update_settings();
  
 $('#settings-notifications').click(function() {
     if ($('#settings-notifications').is(':checked')) {
@@ -206,6 +209,16 @@ $('#settings-analytics').click(function() {
         }
     update_settings();
 });
+$('#settings-startup').click(function() {
+    if ($('#settings-startup').is(':checked')) {
+            localStorage.setItem('edmund_startup', true); 
+        }
+    else {
+            localStorage.setItem('edmund_startup', false);  
+        }
+    update_settings();
+});
+update_settings();
  
 //Loading Message
 var loading = $('#loading');
@@ -751,6 +764,22 @@ $('#launch-button').live('click', function() {
        }       
        update_settings();
 });
+
+//Immediate launch
+if (setting_startup == 'true') {
+ getCatList(); 
+ hideDraw('intro');
+ $('#sidebar').removeClass('disabled');
+ var notify = localStorage.getItem('wikidot_notifications');
+ if (notify === null) {
+         localStorage.setItem('wikidot_notifications', false);
+ }
+ var analytics = localStorage.getItem('edmund_analytics');
+ if (analytics === null) {
+         localStorage.setItem('edmund_analytics', false);
+ }       
+ update_settings();
+}
  
 //When settings form is submitted, hide draws, close settings window & load category list
 $('#settings-form').submit(function() {
@@ -1388,6 +1417,8 @@ $('#mass-rename-submit').click(function() {
  <form class="settings-form" onsubmit="return false;"> 
  <span	class="settings-group-label">Export:</span><input type="checkbox" name="settings-notifications" id="settings-notifications" value="" />
  <label for="settings-notifications" class="checkbox-label">Send watching notifcations</label> <br> 
+ <span	class="settings-group-label">Startup:</span><input type="checkbox" name="settings-startup" id="settings-startup" value="" />
+ <label for="settings-startup" class="checkbox-label">Launch Edmund immediately</label> <br> 
  
  <!-- Event tracking - not currently enabled. 
  <span	class="settings-group-label">Statistics:</span><input type="checkbox" name="settings-analytics" id="settings-analytics" value="" />
@@ -1399,7 +1430,7 @@ $('#mass-rename-submit').click(function() {
  
 <footer> 
 <div class="left"> 
-Edmund v0.85 beta | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="javascript:;" onClick="show_modal('settings');">Settings</a> 
+Edmund v0.86 beta | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="javascript:;" onClick="show_modal('settings');">Settings</a> 
 </div> 
 <div class="right"> 
 Brought to you by <a href="http://bmccreative.com">BMC Creative</a> 

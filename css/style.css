@@ -4,7 +4,7 @@
 
 Edmund - Wikidot Explorer
 
-Version: 1.05.2
+Version: 1.07
 Author: BMC Creative
 Author Website: http://bmccreative.com
  
@@ -199,6 +199,31 @@ header h1 {
 }
 #page-options-link {
 	float: right;
+}
+#sidebar .menubar a {
+	float: left;
+	position: relative;
+	top: 5px;
+	color: transparent;
+	display: block;
+	width: 20px;
+	height: 20px;
+	margin: 0 5px;
+	font-size: 0;
+	text-indent: -9999px;
+	line-height: 0;
+	background:  url('https://css3.wdfiles.com/local--files/edmund/import.png') no-repeat 50% 50%;
+	opacity: 0.7;
+	-webkit-transition: opacity 150ms ease;
+	-moz-transition: opacity 150ms ease;
+	transition: opacity 150ms ease;
+}
+#sidebar .menubar a:hover {
+	opacity: 0.9;
+}
+#sidebar a.settings-link {
+	background:  url('https://css3.wdfiles.com/local--files/edmund/cog.png') no-repeat 50% 50%;
+	margin-left: 0;
 }
 #sidebar li {
 	width: 220px;
@@ -723,7 +748,6 @@ section.draw {
 	padding: 8px;
 	left: 50%;
 	top: 50%;
-	margin-top: -140px;
 	margin-left: -210px;
 	color: #333;
 	background: rgba(26, 33, 38, 0.85);
@@ -741,16 +765,27 @@ section.draw {
 	-moz-transition: opacity 300ms ease-in;
 	transition: opacity 300ms ease-in;	
 }
+#modal-import {
+	width: 300px;
+}
+#modal-import .modal-form {
+	width: 280px;
+	margin: 10px auto;
+}
+#modal-import input[type="text"] {
+	width: 175px;
+}
 .modal.show {
 	opacity: 1;
 	visibility: visible;	
 }
 .modal-inner {
-	height: 260px;
-	-webkit-border-radius: 4px;
 	background-color: #f4f4f4;
 	border-top: 1px solid #fff;
 	padding: 0 0 10px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
 	-webkit-box-shadow: 0 0 4px rgba(0,0,0,0.6);
 	-moz-box-shadow: 0 0 4px rgba(0,0,0,0.6);
 	box-shadow: 0 0 4px rgba(0,0,0,0.6);
@@ -764,16 +799,16 @@ section.draw {
 	box-shadow: 0 1px 0 #fafafa;
 }
 .modal h4:nth-of-type(1) {cursor: move;}
-.settings-form {
+.modal-form {
 	width: 350px;
 	margin: 0 auto 10px;
 }
-#settings label {
+.modal label {
 	display: inline-block;
 	width: 60px;
 	text-align: right;
 }
-#settings .checkbox-label {
+.modal .checkbox-label {
 	width: 250px;
 	margin: 5px 0;
 	text-align: left;
@@ -795,7 +830,7 @@ section.draw {
 	font-size: 0;
 	text-indent: -9999px;
 	line-height: 0;
-	background:  url('file:///Users/brycecameron/Documents/BMC/Development/Edmund%20App/css/close.png') no-repeat 50% 50%;
+	background:  url('https://css3.wdfiles.com/local--files/edmund/close.png') no-repeat 50% 50%;
 	opacity: 0.3;
 	-webkit-transition: opacity 150ms ease;
 	-moz-transition: opacity 150ms ease;
@@ -827,10 +862,11 @@ section.draw {
 #settings-api-key {
 	width: 242px;
 }
-#settings-site {
+#settings-site, #import-site {
 	text-align: right;
 }
-.modal input[type="submit"] {
+.modal input[type="submit"],
+#popup_container input[type="button"] {
 	display: inline-block;
 	    font-weight: bold;
 	    font-size: 12px;
@@ -863,14 +899,16 @@ section.draw {
 	    -webkit-background-clip: padding-box;
 	    background-clip: padding-box;
 }
-.modal input[type="submit"]:hover {
+.modal input[type="submit"]:hover,
+#popup_container input[type="button"]:hover {
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#e4e4e4));
 	    background-image: -moz-linear-gradient(top, #fff, #e4e4e4);
 	    background-image: -o-linear-gradient(top, #fff, #e4e4e4);
 	    background-image: linear-gradient(top, #fff, #e4e4e4); 
 	    color: #444 !important;   
 }
-.modal input[type="submit"]:active {
+.modal input[type="submit"]:active,
+#popup_container input[type="button"]:active {
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eaeaea), to(#f4f4f4));
 	   background-image: -moz-linear-gradient(top, #eaeaea, #f4f4f4);
 	   background-image: -o-linear-gradient(top, #eaeaea, #f4f4f4);
@@ -1296,69 +1334,78 @@ display: none;
 #popup_container {
 	position: fixed;
 	z-index: 9999;
-	padding: 0;
+	padding: 8px !important;
 	margin: 0;
+	color: #333;
 	font-family: Arial, sans-serif;
 	font-size: 12px;
 	min-width: 300px; /* Dialog will be no smaller than this */
-	max-width: 500px; /* Dialog will wrap after this width */
-	background: rgba(0,0,0,0.3);
-	border: 5px solid rgba(0,0,0,0.3);
-	color: #000;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-box-shadow: 0 0 2px rgba(0,0,0,0.2);
-	-moz-box-shadow: 0 0 2px rgba(0,0,0,0.2);
-	box-shadow: 0 0 2px rgba(0,0,0,0.2);
-	-webkit-background-clip: padding-box;
-	background-clip: padding-box;
+	max-width: 400px; /* Dialog will wrap after this width */
+	background: rgba(26, 33, 38, 0.85);
+	background: -moz-linear-gradient(90deg, rgba(26, 33, 38, 0.85) 0%, rgba(34, 42, 47, 0.85) 100%);
+	background: -webkit-gradient(linear, left bottom, left top, from(rgba(26, 33, 38, 0.85)), to(rgba(34, 42, 47, 0.85)));
+	background: -o-linear-gradient(90deg, rgba(26, 33, 38, 0.85) 0%, rgba(34, 42, 47, 0.85) 100%);
+	background: linear-gradient(90deg, rgba(26, 33, 38, 0.85) 0%, rgba(34, 42, 47, 0.85) 100%);
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	box-shadow: 0 0px 5px rgba(0,0,0,0.5);
+	-webkit-transition: opacity 300ms ease-in;
+	-moz-transition: opacity 300ms ease-in;
+	transition: opacity 300ms ease-in;	
 }
 
 #popup_title {
-	font-size: 14px;
+	font-size: 15px;
 	font-weight: bold;
 	text-align: center;
 	color: #666;
-	background-color: #eee;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#ddd));
-	background-image: -moz-linear-gradient(top, #eee, #ddd);
-	background-image: -o-linear-gradient(top, #eee, #ddd);
-	background-image: linear-gradient(top, #eee, #ddd);
-	border-bottom: solid 1px #999;
-	cursor: default;
-	padding: 0em;
-	margin: 0em;
-	-webkit-border-radius: 2px 2px 0 0;
-	-moz-border-radius: 2px 2px 0 0;
-	border-radius: 2px 2px 0 0;
+	margin: 0;
+	padding: 5px 20px 3px;
+	background: #f4f4f4;
+	border-bottom: 1px solid #ddd;
+	-webkit-box-shadow: 0 1px 0 #fafafa;
+	-moz-box-shadow: 0 1px 0 #fafafa;
+	box-shadow: 0 1px 0 #fafafa;
+	-webkit-border-radius: 4px 4px 0 0;
+	-moz-border-radius: 4px 4px 0 0;
+	border-radius: 4px 4px 0 0;
 }
-
 #popup_content {
-	background: #fff;
-	padding: 1em 1.75em;
+	padding: 10px;
 	margin: 0em;
-	-webkit-border-radius: 0 0 2px 2px;
-	-moz-border-radius: 0 0 2px 2px;
-	border-radius: 0 0 2px 2px;
+	background-color: #f4f4f4;
+	border-top: 1px solid #fff;
+	-webkit-border-radius: 0 0 4px 4px;
+	-moz-border-radius: 0 0 4px 4px;
+	border-radius: 0 0 4px 4px;
 }
 #popup_message {
 	text-align: center;
 }
-
 #popup_panel {
 	text-align: center;
 	margin: 1em 0em 0em 1em;
 }
-
 #popup_prompt {
 	margin: .5em 0em;
+}
+#popup_container input[type="button"] {
+	margin:0 6px;
+	font-size: 11px;
+	height: 24px;
+	line-height: 11px;
+}
+#popup_container input[type="button"]:focus {
+	border: 1px solid #39c;
+	outline: none;
 }
 #popup_overlay {
 	background-color: #000 !important;
 	opacity: 0.25 !important;
 }
-
 #overlay {
 	position: absolute;
 	z-index: 9999;
@@ -1375,4 +1422,3 @@ display: none;
 #overlay.show {
 	opacity: 0.25;
 }
-

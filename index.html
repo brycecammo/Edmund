@@ -89,21 +89,30 @@ $('section.draw.nudge').live('click', function() {
 });
 
 function show_modal(id) {
-	$('#' + id).addClass('show').draggable({ containment: 'window', handle: 'h4:first' });
+	$('#' + id).addClass('show').draggable({ containment: 'window', handle: 'h4:first' }).css({marginTop: $(this).height()/-4});
 	$('#overlay').addClass('show').css({height: $(document).height()});
 }
 
 //Close settings window (called on click of submit button)  
 function close_settings() {
 	$('.modal').removeClass('show');
-	$('#overlay').removeClass('show').css({height: '0'});;
+	$('#overlay').removeClass('show').css({height: '0'});
 	var settingsSite = $('#settings-site').val();
     window.location.hash = '#';
 }
-function close_modal() {
-	$('.modal').removeClass('show');
-	$('#overlay').removeClass('show').css({height: '0'});;
+function close_modal(id) {
+	var $modal = $('#' + id);
+	$modal.removeClass('show');
+	$('#overlay').removeClass('show').css({height: '0'});
+	if ($modal.hasClass('removable') === true) {
+		$modal.remove();
+	}
+	
 }	 
+
+function import_modal() {
+    $('body').append('<div id="modal-import" class="modal removable"><div class="modal-inner"> <h4>Import page</h4><a href="#" class="modal-close" onclick=close_modal("modal-import");>Close</a><form name="import-form" id="import-form" class="modal-form" onsubmit="return false;"><label for="import-site">Site:</label> <!--<input type="text" name="import-site" id="import-site" value="'+ wdSite +'" disabled="true" />--> <label for="import-site" class="url-end">'+wdSite+'.wikidot.com</label><br><label for="import-page">Page:</label> <input type="text" name="import-page" id="import-page" value="" /><br> <input type="submit" name="import-submit" id="import-submit" value="Import page" /></form></div></div>');  
+}
 //Allow for parameters to passed via the URL
 function url_param(name) {
   name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
@@ -752,6 +761,26 @@ $('#settings-form').submit(function() {
        $('#sidebar').removeClass('disabled');
        return false;
 });    
+
+//When import page button is clicked, import the page & category
+$('#import-submit').live('click', function() {
+		
+       var importPage = $('#import-page').val();
+       getPageMeta(importPage);
+       
+       var pageNameSplit = importPage.replace(':', ':::edmund-splitter:::');
+       var pageNameArray = pageNameSplit.split(':::edmund-splitter:::');
+       var pageName = pageNameArray[1];
+       var pageCategory = pageNameArray[0];
+       
+       if (importPage.indexOf(':') == -1) {getPageList('_default');} //Check if import page contains a category
+       else 							  {getPageList(pageCategory);}
+       
+       goToPageList();
+       close_modal('modal-import');
+       $('#modal-import').remove();
+       return false;
+});
  
 //Get site & page from URL
 var urlSite = url_param('site');
@@ -1044,7 +1073,7 @@ $('#mass-rename-submit').click(function() {
 <div id="content"> 
  
 <div id="sidebar" class="disabled"> 
-<div class="menubar side"><a href="javascript:;" onclick="show_modal('settings');">Settings</a></div> 
+<div class="menubar side"><a href="javascript:;" onclick="show_modal('settings');" class="settings-link menubar-link" title="Edit settings">Settings</a> <a href="javascript:;" onclick="import_modal();show_modal('modal-import');" class="import-link menubar-link" title="Import a page">Import</a></div> 
  
  <form onsubmit="return false;" class="switch-form"> 
  <label for="mass-editor-toggle" class="switch-label"> 
@@ -1344,8 +1373,8 @@ $('#mass-rename-submit').click(function() {
  <div id="settings" class="modal"> 
  <div class="modal-inner">
  <h4>Wikidot Settings</h4> 
-  <a href="#" class="modal-close" onclick="close_modal();">Close</a>
- <form name="settings-form" id="settings-form" class="settings-form"> 
+  <a href="#" class="modal-close" onclick="close_modal('settings');">Close</a>
+ <form name="settings-form" id="settings-form" class="modal-form"> 
  <label for="settings-site">Site:</label> 
  <input type="text" name="settings-site" id="settings-site" value="" /> 
  <label for="settings-site" class="url-end">.wikidot.com</label><br> 
@@ -1370,7 +1399,7 @@ $('#mass-rename-submit').click(function() {
  
 <footer> 
 <div class="left"> 
-Edmund v0.8 beta | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="javascript:;" onClick="show_modal('settings');">Settings</a> 
+Edmund v0.85 beta | <a href="#" onclick="hideAllDraws(); showDraw('intro');">Intro</a> | <a href="#" onclick="hideAllDraws(); showDraw('about');">About</a> | <a href="javascript:;" onClick="show_modal('settings');">Settings</a> 
 </div> 
 <div class="right"> 
 Brought to you by <a href="http://bmccreative.com">BMC Creative</a> 
